@@ -1,0 +1,84 @@
+import java.util.*;
+public class Ship {
+	private String shipName;
+	private int length;
+	private int numHits;
+	private ArrayList<BoardSquare> points;
+	
+	/**
+	 * <p>Constructor for a ship</p>
+	 * @param name The name of the ship
+	 * @param length The length of the ship
+	 */
+	public Ship(String name, int length){
+		this.shipName = name;
+		this.length = length;
+		this.numHits = 0;
+		this.points = new ArrayList<BoardSquare>();
+	}
+	
+	/**
+	 * <p>Setting the location of a ship</p>
+	 * @param inGrid The parent grid where you're placing the ship
+	 * @param y The placing x coordinate
+	 * @param x The placing y coordinate
+	 * @param horizontal Whether or not the ship is being placed horizontally
+	 * @return Whether or not the ship could be placed in that spot
+	 */
+	public boolean setLocation(BoardSquare[][] inGrid, int y, int x, boolean horizontal){
+		int axisCoord = horizontal?x:y; //Coordinate along the axis needed for constraint checks
+		int iterY = y;
+		int iterX = x; 
+		if (axisCoord+this.length > 10){ //Ship is too long to be placed
+			return false;
+		}
+		
+		for (int i = 0; i < this.length; i++){
+			if (inGrid[iterY][iterX].getOccupied()){
+				return false;
+			}
+			if (horizontal){
+				iterX++;
+			}
+			else{
+				iterY++;
+			}
+		}
+		//Variables to iterate through the grid
+		iterY = y;
+		iterX = x;
+		
+		for (int i = 0; i < this.length; i++){ //Iterate through the grid and add points
+			BoardSquare iterSquare = inGrid[iterY][iterX];
+			this.points.add(iterSquare); //Add current square
+			iterSquare.setOccupied(true);
+			iterSquare.setOccupyingShip(this);
+			
+			if(horizontal){ //If horizontal, change the second number.
+				iterX++;
+			}
+			else{//If vertical, change the first number
+				iterY++;
+			}
+		}
+		
+		return true;
+	}
+	
+	public String getName(){
+		return this.shipName;
+	}
+	
+	public int getLength(){
+		return this.length;
+	}
+	
+	public ArrayList<BoardSquare> getPoints(){
+		return this.points;
+	}
+	
+	public boolean addHit(){
+		return (++this.numHits == this.length);
+	}
+	
+}

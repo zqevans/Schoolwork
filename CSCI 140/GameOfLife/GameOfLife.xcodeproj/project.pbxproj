@@ -1,0 +1,213 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1F9A3CF91659B02C00E37566 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F9A3CF81659B02C00E37566 /* main.cpp */; };
+		1F9A3CFB1659B02C00E37566 /* GameOfLife.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1F9A3CFA1659B02C00E37566 /* GameOfLife.1 */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1F9A3CF21659B02C00E37566 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				1F9A3CFB1659B02C00E37566 /* GameOfLife.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1F9A3CF41659B02C00E37566 /* GameOfLife */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GameOfLife; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F9A3CF81659B02C00E37566 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		1F9A3CFA1659B02C00E37566 /* GameOfLife.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = GameOfLife.1; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1F9A3CF11659B02C00E37566 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1F9A3CE91659B02C00E37566 = {
+			isa = PBXGroup;
+			children = (
+				1F9A3CF71659B02C00E37566 /* GameOfLife */,
+				1F9A3CF51659B02C00E37566 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1F9A3CF51659B02C00E37566 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1F9A3CF41659B02C00E37566 /* GameOfLife */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1F9A3CF71659B02C00E37566 /* GameOfLife */ = {
+			isa = PBXGroup;
+			children = (
+				1F9A3CF81659B02C00E37566 /* main.cpp */,
+				1F9A3CFA1659B02C00E37566 /* GameOfLife.1 */,
+			);
+			path = GameOfLife;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1F9A3CF31659B02C00E37566 /* GameOfLife */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F9A3CFE1659B02C00E37566 /* Build configuration list for PBXNativeTarget "GameOfLife" */;
+			buildPhases = (
+				1F9A3CF01659B02C00E37566 /* Sources */,
+				1F9A3CF11659B02C00E37566 /* Frameworks */,
+				1F9A3CF21659B02C00E37566 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GameOfLife;
+			productName = GameOfLife;
+			productReference = 1F9A3CF41659B02C00E37566 /* GameOfLife */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1F9A3CEB1659B02C00E37566 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0440;
+				ORGANIZATIONNAME = "Zach Evans";
+			};
+			buildConfigurationList = 1F9A3CEE1659B02C00E37566 /* Build configuration list for PBXProject "GameOfLife" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 1F9A3CE91659B02C00E37566;
+			productRefGroup = 1F9A3CF51659B02C00E37566 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1F9A3CF31659B02C00E37566 /* GameOfLife */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1F9A3CF01659B02C00E37566 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F9A3CF91659B02C00E37566 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1F9A3CFC1659B02C00E37566 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		1F9A3CFD1659B02C00E37566 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		1F9A3CFF1659B02C00E37566 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1F9A3D001659B02C00E37566 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1F9A3CEE1659B02C00E37566 /* Build configuration list for PBXProject "GameOfLife" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F9A3CFC1659B02C00E37566 /* Debug */,
+				1F9A3CFD1659B02C00E37566 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1F9A3CFE1659B02C00E37566 /* Build configuration list for PBXNativeTarget "GameOfLife" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F9A3CFF1659B02C00E37566 /* Debug */,
+				1F9A3D001659B02C00E37566 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1F9A3CEB1659B02C00E37566 /* Project object */;
+}

@@ -1,0 +1,77 @@
+package battleship;
+import java.util.*;
+import java.net.*;
+import java.io.*;
+@SuppressWarnings("unused")
+public class Player extends Thread{
+	private String playerName;
+	private ArrayList<Point> points;
+	private GameThread currentGame = null;
+	
+	private Socket playerSock;
+	private PrintWriter playerOut;
+	private BufferedReader playerIn;
+	public Player(Socket playerSock){
+		this.points = new ArrayList<Point>();
+		this.playerSock = playerSock;
+		
+		try {
+			this.playerOut = new PrintWriter(playerSock.getOutputStream(), true);
+			this.playerIn = new BufferedReader(new InputStreamReader(playerSock.getInputStream()));
+			
+		} catch (IOException e) {
+			System.out.println("Couldn't get socket output stream.");
+		}
+		Globals.addPlayer(this);
+	}
+	
+	public void sendMessage(String msg){
+		this.playerOut.println(msg);
+	}
+	
+	public void setPlayer(String name){
+		this.playerName = name;
+	}
+	public String getPlayer(){
+		return this.playerName;
+	}
+	public void setGame(GameThread newGame){
+		this.currentGame = newGame;
+	}
+	
+	public void addPoint(Point inShip){
+		this.points.add(inShip);
+	}
+	
+	private void processClientMessage(String clientMessage){
+		if (clientMessage.startsWith("Name: ")){
+			System.out.println(clientMessage);
+			this.setName(clientMessage.substring(6));
+			playerOut.println("place");
+			System.out.println("Sent to " +this.playerName);
+		}
+		else if(clientMessage.startsWith("Ships: ")){
+			String[] pointArray = clientMessage.substring(7).split(" ");
+			for (String point: pointArray){
+				Point newShip = new Point(point.charAt(0), Integer.parseInt(point.substring(1)));
+				this.addPoint(newShip);
+			}
+			for (Point s: points){
+				System.out.print(s.getLetter()+String.valueOf(s.getNumber()));
+			}
+		}
+	}
+	
+	public void run(){
+		String clientMessage;
+		try {
+			System.out.println("Starting client read loop");
+			while((clientMessage = playerIn.readLine()) != null){
+				processClientMessage(clientMessage);
+			}
+			System.out.println("Client disconnected");
+		} catch (IOException e) {
+			Globals.removePlayer(this);
+		}
+	}
+}

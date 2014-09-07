@@ -1,0 +1,52 @@
+package cs345evansz2;
+
+import static cs345evansz2.GameGlobals.*;
+
+public class Player {
+	
+	private String playerName;
+	private Room currentRoom;
+	
+	Player(String inName){
+		playerName = inName;
+	}
+
+	
+	public Room getLocation(){
+		return currentRoom;
+	}
+	
+	
+	public void apportTo(Room apportRoom){
+		currentRoom = apportRoom;
+		messageOut.println(apportRoom.roomDescription);
+	}
+	
+	public void moveOnPath(Word pathWord){
+		
+		for (Path p: currentRoom.validPaths){
+			for (Word w: p.pathVocab.wordList){
+				if(w.getType() == MatchType.EXACT){
+					if (pathWord == w){
+						
+					}
+				}
+				else if(w.getType() == MatchType.PREFIX){
+					if (isPrefixMatch(pathWord, w)){
+						
+					}
+				}
+			}
+		}
+		
+	}
+	
+	public void lookAround(){
+		messageOut.println(currentRoom.roomDescription);
+	}
+	
+	public String getName(){
+		return playerName;
+	}
+	
+}

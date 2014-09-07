@@ -1,0 +1,64 @@
+package battleship;
+public class Point {
+	private char letter;
+	private int number;
+	private boolean hit;
+	
+	/**
+	 * <p>Constructor for a point</p>
+	 * @param let The letter coordinate of the point 
+	 * @param num The number coordinate of the point
+	 */
+	public Point(char let, int num){
+		this.letter = let;
+		this.number = num;
+		this.hit = false;
+	}
+	
+	/**
+	 * <p>Getter for the point's letter coordinate</p>
+	 * @return The letter coordinate of the point
+	 */
+	public char getLetter(){
+		return this.letter;
+	}
+	
+	/**
+	 *<p> Getter for the point's number coordinate</p>
+	 * @return The letter coordinate of the point
+	 */
+	public int getNumber(){
+		return this.number;
+	}
+	
+	/**
+	 * <p>Getter for the hit status </p>
+	 * @return The hit status of the point
+	 */
+	public boolean isHit(){
+		return this.hit;
+	}
+	
+	/**
+	 * <p>Setter for the hit status </p>
+	 * @param hit The hit status of the point
+	 */
+	public void setHit(boolean hit){
+		this.hit = hit;
+	}
+	
+	/**
+	 * <p>Checks if the points hold the same coordinate</p>
+	 * @param p1 The first point to check
+	 * @param p2 The second point to check
+	 * @return Whether or not the points have the same number and letter coordinates
+	 */
+	public static boolean samePoint(Point p1, Point p2){
+		return (p1.getLetter() == p2.getLetter() && p1.getNumber() == p2.getNumber());
+	}
+	
+	public String toString(){
+		return this.getLetter()+String.valueOf(this.getNumber());
+	}
+	
+}

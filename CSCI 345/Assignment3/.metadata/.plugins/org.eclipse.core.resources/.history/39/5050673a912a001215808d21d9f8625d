@@ -1,0 +1,29 @@
+package cs345evansz2;
+
+import cs345evansz2.GameGlobals.*;
+
+public class Word {
+	
+	private static String word;
+	private static MatchType wordType;
+
+	Word(String inWordString, MatchType inWordType) {
+		
+		word = inWordString;
+		wordType = inWordType;
+		
+	}
+	
+	public static Word makeWord (String inWordString, MatchType inWordType){
+		
+		Word tempWord = new Word(inWordString, inWordType);
+		GameGlobals.allWords.add(tempWord);
+		return tempWord;
+	
+	}
+	
+
+	public String getWord(){
+		return word;
+	}
+}

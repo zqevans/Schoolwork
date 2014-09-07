@@ -1,0 +1,25 @@
+package cs345evansz2;
+
+public class Word {
+	
+	private String wordString;
+	private MatchType wordType;
+
+	public Word (String inWordString, MatchType inWordType) {
+		
+		wordString = inWordString;
+		wordType = inWordType;
+		
+	}
+	
+	public static Word makeWord (String inWordString, MatchType inWordType){
+		
+		return Word(inWordString, inWordType);
+		
+	}
+	
+	public String getWordString {
+		return this.wordString;
+	}
+	
+}

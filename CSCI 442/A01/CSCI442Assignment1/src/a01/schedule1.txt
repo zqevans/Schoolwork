@@ -1,0 +1,82 @@
+5 : DELAY(10) : 5 : DELAY(10) : 5 : DELAY(10) : 5
+Bus #1 arrived heading South
+Bus #3 arrived heading North
+Bus #2 arrived heading South
+Bus #4 arrived heading South
+Bus #5 arrived heading North
+Bus #1 crossing heading South.
+North queue: 3, 5  South queue: 2, 4  VU: 1
+Bus #1 exiting going South. Departure Index: 1
+Bus #5 crossing heading North.
+North queue:   South queue: 2, 4  VU: 3, 5
+Bus #3 crossing heading North.
+North queue:   South queue: 2, 4  VU: 3, 5
+Bus #5 exiting going North. Departure Index: 2
+Bus #3 exiting going North. Departure Index: 3
+Bus #4 crossing heading South.
+Bus #2 crossing heading South.
+North queue:   South queue:   VU: 2, 4
+North queue:   South queue:   VU: 2, 4
+Bus #6 arrived heading South
+Bus #7 arrived heading South
+Bus #8 arrived heading North
+Bus #9 arrived heading North
+Bus #10 arrived heading South
+Bus #4 exiting going South. Departure Index: 4
+Bus #2 exiting going South. Departure Index: 5
+Bus #8 crossing heading North.
+North queue:   South queue: 6, 7, 10  VU: 8, 9
+Bus #9 crossing heading North.
+North queue:   South queue: 6, 7, 10  VU: 8, 9
+Bus #8 exiting going North. Departure Index: 6
+Bus #9 exiting going North. Departure Index: 7
+Bus #7 crossing heading South.
+Bus #10 crossing heading South.
+Bus #6 crossing heading South.
+North queue:   South queue:   VU: 6, 7, 10
+North queue:   South queue:   VU: 6, 7, 10
+North queue:   South queue:   VU: 6, 7, 10
+Bus #11 arrived heading North
+Bus #12 arrived heading South
+Bus #13 arrived heading South
+Bus #14 arrived heading South
+Bus #15 arrived heading North
+Bus #7 exiting going South. Departure Index: 8
+Bus #10 exiting going South. Departure Index: 9
+Bus #6 exiting going South. Departure Index: 10
+Bus #11 crossing heading North.
+North queue:   South queue: 12, 13, 14  VU: 11, 15
+Bus #15 crossing heading North.
+North queue:   South queue: 12, 13, 14  VU: 11, 15
+Bus #11 exiting going North. Departure Index: 11
+Bus #15 exiting going North. Departure Index: 12
+Bus #13 crossing heading South.
+Bus #12 crossing heading South.
+Bus #14 crossing heading South.
+North queue:   South queue:   VU: 12, 13, 14
+North queue:   South queue:   VU: 12, 13, 14
+North queue:   South queue:   VU: 12, 13, 14
+Bus #13 exiting going South. Departure Index: 13
+Bus #12 exiting going South. Departure Index: 15
+Bus #14 exiting going South. Departure Index: 14
+Bus #16 arrived heading South
+Bus #17 arrived heading North
+Bus #18 arrived heading North
+Bus #16 crossing heading South.
+Done starting busses
+North queue: 17, 18  South queue: 19, 20  VU: 16
+Bus #19 arrived heading South
+Bus #20 arrived heading South
+Bus #16 exiting going South. Departure Index: 16
+Bus #18 crossing heading North.
+Bus #17 crossing heading North.
+North queue:   South queue: 19, 20  VU: 17, 18
+North queue:   South queue: 19, 20  VU: 17, 18
+Bus #18 exiting going North. Departure Index: 17
+Bus #17 exiting going North. Departure Index: 18
+Bus #19 crossing heading South.
+Bus #20 crossing heading South.
+North queue:   South queue:   VU: 19, 20
+North queue:   South queue:   VU: 19, 20
+Bus #19 exiting going South. Departure Index: 19
+Bus #20 exiting going South. Departure Index: 20

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE courses SYSTEM "WWU_courses.dtd">
+<courses>
+	<course num="CSCI 141" name="Computer Programming I W/ Lab" credits="4">
+		<section crn="40494" prof="Granier, M." startTime="9:00 AM" endTime="9:50 AM" room="CF 125"></section>
+		<section crn="43603" prof="Woodcock, J." startTime="11:00 AM" endTime="11:50 AM" room="ES 100"></section>
+	</course>
+	<course num="CSCI 145" name="Comp Prog and Linear Data Struct" credits="4">
+		<section crn="41379" prof="Reedy, C." startTime="10:00 AM" endTime="10:50 AM" room="ES 100"/>
+		<section crn="41268" prof="Reedy, C." startTime="10:00 AM" endTime="10:50 AM" room="ES 100"/>
+		<section crn="41269" prof="Reedy, C." startTime="11:00 AM" endTime="11:50 AM" room="CF 100"/>
+	</course>
+</courses>

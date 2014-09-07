@@ -1,0 +1,20 @@
+package a01;
+import java.util.*;
+
+public class ControllerThread extends Thread {
+	private static ArrayList<BusThread> busBuffer;
+	
+	public ControllerThread(){}
+
+	public void run(){
+		int maxBusses = 4; //Max busses that can go in one direction
+		int lastDirection = 0;
+		int bussesAtATime = 3; //Busses that can go at one time
+		int bussesGone = 0;
+		while(true){
+			
+			busBuffer = BusThread.getBusBuffer();
+			
+		}
+	}
+}

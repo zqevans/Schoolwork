@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="263" key="DIALOG_WIDTH"/>
+		<item value="102" key="DIALOG_Y_ORIGIN"/>
+		<item value="399" key="DIALOG_HEIGHT"/>
+		<item value="882" key="DIALOG_X_ORIGIN"/>
+		<item value="1|Lucida Grande|11.0|0|COCOA|1|LucidaGrande" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="true" key="wrap"/>
+		<item value="false" key="isRegEx"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="false" key="wholeword"/>
+		<item value="System.out" key="selection"/>
+		<list key="findhistory">
+			<item value="System.out"/>
+			<item value="enemy"/>
+			<item value="Size"/>
+			<item value="Waiting"/>
+			<item value="Aircraft"/>
+			<item value="enemyShips"/>
+			<item value="yellow"/>
+			<item value="Ship"/>
+		</list>
+		<list key="replacehistory">
+			<item value="Point"/>
+		</list>
+	</section>
+</section>

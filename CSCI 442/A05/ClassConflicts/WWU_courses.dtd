@@ -1,0 +1,11 @@
+<!ELEMENT courses (course*)>
+<!ELEMENT course (section+)>
+<!ATTLIST course name CDATA #REQUIRED>
+<!ATTLIST course num CDATA #REQUIRED>
+<!ATTLIST course credits CDATA #REQUIRED>
+<!ELEMENT section EMPTY>
+<!ATTLIST section crn CDATA #REQUIRED>
+<!ATTLIST section startTime CDATA #REQUIRED>
+<!ATTLIST section endTime CDATA #REQUIRED>
+<!ATTLIST section prof CDATA "TBA">
+<!ATTLIST section room CDATA #REQUIRED>

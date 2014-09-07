@@ -1,0 +1,106 @@
+/*1369024377,178142531*/
+
+.fbEmuStreamStoryAttachment .fbEigenpoll{margin-left:-18px}
+.fbEmuStreamStoryAttachment .fbEigenpoll .fbEigenpollPager,
+.fbEmuStreamStoryAttachment .fbEigenpoll .fbEigenpollAddOption,
+.fbEmuStreamStoryAttachment .fbEigenpoll .fbEigenpollResults{width:146px;white-space:nowrap}
+.fbEmuStreamStoryAttachment .fbEigenpoll
+.fbEigenpollAddOption .fbEigenpollTypeahead{width:146px}
+.fbEmuStreamStoryAttachment .fbEigenpoll .fbEigenpollRow{width:200px}
+.fbEmuStreamStoryAttachment .fbEigenpoll .fbEigenpollFacepile{width:24px}
+.fbEmuStreamStoryAttachment .pollOptions{margin-left:-18px}
+.fbEmuStreamStoryAttachment .pollOptions .fbQuestionsPollResultsBar{width:130px;white-space:nowrap}
+.fbEmuStreamStoryAttachment .pollOptions .fbQuestionsPollResultsBar .label{padding:0;text-align:left}
+.fbEmuStreamStoryAttachment .pollOptions .pollResultsFacepile{width:24px}
+.fbEmuStreamStoryAttachment .pollOptions{table-layout:auto}
+.fbEmuStreamStoryAttachment .photoPollGrid.notFull{padding-right:25px}
+.fbEmuStreamStoryAttachment .photoPoll{overflow:hidden}
+._52gq{float:right;opacity:0}
+._52gr{padding-left:6px}
+._52gr li{margin-bottom:8px;padding-right:4px}
+._52gr li + li{border-top:1px solid #e9e9e9;padding-top:8px}
+._52gr li:hover ._52gq{opacity:1}
+._52gs{font-weight:bold;margin-top:1px}
+._8qe{margin-right:8px}
+._8qf{border-color:#e9e9e9;border-style:solid;border-width:1px 0 0 0}
+._8qg{margin-bottom:3px;width:300px}
+._8qh{height:70px;margin-right:10px;width:70px}
+._8qi{height:70px}
+._4_ke{width:140px}
+i._8qj{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yd/r/IGCFwUDxExb.png);background-repeat:no-repeat;background-size:auto;background-position:-62px -543px;height:14px;width:12px}
+i._8qk{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yd/r/IGCFwUDxExb.png);background-repeat:no-repeat;background-size:auto;background-position:-131px -558px;height:14px;width:9px}
+._8ql{background:#f8f9fb;border-bottom:1px solid #e4e4e5;border-top:1px solid #e4e4e5;margin:0 0 15px 0}
+div._8ql input.textInput{background:white;border-color:#bdc7d8;border-style:solid;border-width:1px 0}
+._8qm{text-align:center}
+._8qm .arrow{background:transparent url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yV/r/IJYgcESal33.png) 0 -413px;display:inline-block;height:7px;margin-left:4px;width:4px}
+._8qm:hover{background-color:#d8dfea}
+._1qp6 .fbProfileBrowserListContainer, ._262m{margin-left:-13px}
+._1qp6 .fbProfileBrowserListContainer .fbProfileBrowserListItem, html ._262m ._698{border:1px solid #e9eaed;display:inline-block;margin:0 0 13px 13px;padding:0 10px 0 0;vertical-align:top;width:390px}
+._1qp6 .fbProfileBrowserSummaryBox{padding-top:0}
+._1qp6 .fbProfileBrowserListContainer{padding:10px 0}
+._3qxv ._262m{display:none}
+.fbProfileBrowserTypeahead .nameTypeaheadThrobber{display:none;position:absolute;right:6px;top:5px}
+div.fbProfileBrowserTypeahead .clear,
+.fbProfileBrowser .loading .nameTypeaheadThrobber{display:block}
+.fbProfileBrowser .loading .clear{display:none}
+.fbEigenpoll .fbEigenpollCheckbox{cursor:pointer;margin:4px 0 0 5px}
+.fbEigenpoll .fbEigenpollCheckbox input{cursor:pointer;margin-left:1px}
+.fbEigenpoll .fbEigenpollAddOption, .fbEigenpoll .fbEigenpollPager, .fbEigenpoll .fbEigenpollResults{cursor:pointer;width:236px}
+* .fbEigenpoll .fbEigenpollAddOption{margin-top:6px}
+.fbEigenpoll .fbEigenpollRow, .fbEigenpoll .fbEigenpollFeed{width:398px}
+.fbEigenpollSubstoryAttachment{width:358px}
+.uiStreamStory .fbEigenpoll{overflow:hidden}
+.fbEigenpoll .fbEigenpollResults, .fbEigenpoll .fbEigenpollPager, .fbEigenpoll .fbEigenpollRow + .fbEigenpollAddOption, .fbEigenpoll .fbEigenpollRow ~ .fbEigenpollAddOption{padding-left:26px}
+.fbEigenpoll .fbEigenpollFacepile{width:132px}
+.fbEigenpoll .fbEigenpollSelected div, .fbEigenpoll .fbEigenpollResults:hover div, .fbEigenpoll .fbEigenpollCheckbox:hover + .fbEigenpollResults div{border-color:#3b5998}
+.fbEigenpoll .fbEigenpollResults:active div{border-color:#1d4088}
+.fbEigenpoll .fbEigenpollResults:hover .fbQuestionsPollAttachment, .fbEigenpoll .fbEigenpollCheckbox:hover + .fbEigenpollResults
+.fbQuestionsPollAttachment, .fbEigenpoll .fbEigenpollResults:hover .auxlabel, .fbEigenpoll .fbEigenpollCheckbox:hover + .fbEigenpollResults .auxlabel{visibility:visible}
+.fbEigenpoll .fbEigenpollRow{padding:2px 0}
+.fbEigenpoll .fbEigenpollPager{padding-top:2px}
+.fbEigenpoll .fbEigenpollRow + .fbEigenpollAddOption{cursor:default;margin-top:6px}
+.fbEigenpoll .fbEigenpollHighlight{background-color:#edeff4;border-left:2px solid #a8b2ce;margin:0 0 0 -2px}
+.fbEigenpoll .fbEigenpollRemoveButton{margin:5px 190px 0 0}
+.fbEigenpoll .fbEigenPollDisabledRow .fbEigenpollCheckbox, .fbEigenpoll .fbEigenPollDisabledRow .fbEigenpollCheckbox input, .fbEigenpoll .fbEigenPollDisabledRow .fbEigenpollResults, .fbEigenpoll .fbEigenPollDisabledRow .fbQuestionsPollClickTarget{cursor:default}
+.fbQuestionsPollPager{display:block;margin-top:2px;text-align:center;border:1px solid #eceff5;height:18px}
+.fbQuestionsPollPager span{padding-top:2px;border:1px dashed #bec8dd;height:16px;display:block;margin:-1px}
+.fbQuestionsPollPager:hover{background-color:#ebeff4;color:#3b5998;border-color:#d8dfea;text-decoration:none}
+.fbQuestionsPollPager:hover span{border-color:#93a4c7}
+.fbQuestionsPollResultsBar{position:relative;border:1px solid;border-color:#a4a4a4 #bbb #d5d5d5;padding:3px 5px 6px;background-color:#fff;zoom:1}
+.fbQuestionsPollResultsBar .shaded{position:absolute;background-color:#d8dfea;height:100%;top:-1px;left:-1px;border:solid #93a4c7;border-width:1px 0 1px 1px}
+.fbQuestionsPollResultsBar .full{border-width:1px}
+.fbQuestionsPollResultsBar .label{top:1px;position:relative;line-height:13px;overflow:hidden;color:#3b5998}
+.fbQuestionsPollResultsBar .auxlabel{visibility:hidden;position:absolute;right:0;top:0;height:100%;background-color:#fff}
+.fbQuestionsPollResultsBar .auxlabel span{position:relative;top:4px}
+.fbQuestionsPollResultsBar .auxlabelWithAttachment, .fbQuestionsPollResultsBar .fbQuestionsPollClickTargetWithAttachment{padding-right:25px}
+.fbQuestionsPollResultsBar .fbQuestionsPollAttachmentContainer{margin:3px;position:absolute;right:0;top:0;z-index:1}
+.fbQuestionsPollResultsBar .fbQuestionsPollAttachment{height:16px;visibility:hidden;width:16px}
+.fbQuestionsPollResultsBar .fbQuestionsPollAttachmentIcon{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/y7/r/V8auG3AzVaU.png);background-repeat:no-repeat;background-size:auto;background-position:0 0;height:16px;width:16px}
+.fbQuestionsPollResultsBar .fbQuestionsPollAttachmentIcon:hover{background-color:#6d84b4;border-radius:2px}
+.fbQuestionsPollResultsBar .fbQuestionsPollClickTarget{position:absolute;top:-1px;left:-1px;right:-1px;cursor:pointer;z-index:1;height:100%}
+.fbEigenpoll .fbEigenpollAddOption .fbEigenpollTypeaheadTD{border:1px solid #bdc7d8;width:100%}
+.fbEigenpoll .fbEigenpollAddOption .child_was_focused .fbEigenpollTypeaheadTD{border-right-width:0}
+.fbEigenpoll .fbEigenpollAddOption .fbEigenpollTypeahead, .fbEigenpoll .fbEigenpollAddOption .fbEigenpollTypeahead .wrap{border-width:0}
+.fbEigenpoll .fbEigenpollAddOption .fbEigenpollTypeahead{width:234px}
+.fbEigenpoll .fbEigenpollAddOption .child_was_focused .fbEigenpollTypeahead{width:auto}
+.fbEigenpoll .fbEigenpollAddOption .fbEigenpollAddButton{display:none}
+.fbEigenpoll .fbEigenpollAddOption .child_was_focused .fbEigenpollAddButton{display:inline-block}
+.fbEigenpoll .fbEigenpollTypeahead .calltoaction{border-bottom:1px solid #ddd !important;border-top:none;margin:-2px 0 2px !important}
+.fbEigenpoll .fbEigenpollTypeahead .calltoaction.selected{border-bottom-color:#3b5998 !important}
+.fbEigenpoll .fbEigenpollTypeahead .plus{margin-right:3px;position:absolute;top:0}
+.fbEigenpoll .fbEigenpollTypeahead .selected .plus{background:#e2e8f6}
+.webComposerQuestion .fbEigenpollTypeahead input, .fbEigenpoll .fbEigenpollAddOption .fbEigenpollTypeahead input{padding-left:16px;width:90%}
+._43q8{background-color:#eceff5;text-align:center;vertical-align:middle}
+._43q8 > a, ._43q8 > span{color:#6d84b4;display:block;font-family:Helvetica, Arial, sans-serif;font-weight:bold;text-decoration:none}
+._43q9 ._43q8{height:24px;line-height:25px;width:24px}
+._43q9 ._43qa, ._43q9 ._43qb{font-size:11px}
+._43qc ._43q8{height:32px;line-height:33px;width:32px}
+._43qc ._43qa, ._43qc ._43qb{font-size:14px}
+._43qc ._43qd{font-size:11px}
+._43qc ._43qe{font-size:8px}
+._43qf ._43q8{height:50px;line-height:51px;width:50px}
+._43qf ._43qa, ._43qf ._43qb{font-size:19px}
+._43qf ._43qd{font-size:14px}
+._43qf ._43qe{font-size:11px}
+
+#bootloader_sIXwl { height: 42px; }

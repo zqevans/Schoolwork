@@ -1,0 +1,6 @@
+/*1369013568,178142531*/
+
+if (self.CavalryLogger) { CavalryLogger.start_js(["GCzU+"]); }
+
+__d("OGCollectionAddedIconPlaceholder",["CSS","DataStore","DOM","DOMQuery","Event","copyProperties","csx","tidyEvent"],function(a,b,c,d,e,f){var g=b('CSS'),h=b('DataStore'),i=b('DOM'),j=b('DOMQuery'),k=b('Event'),l=b('copyProperties'),m=b('csx'),n=b('tidyEvent'),o='OGCollectionAddedIconPlaceholder';function p(q,r,s){this._dialog=s;this._icon=r;n(k.listen(r,'click',s.show.bind(s)));h.set(String(q),o,this);}l(p,{loadEditMenu:function(q,r){var s=h.get(String(q),o);s.insertIntoDialog(r);}});l(p.prototype,{destroy:function(){this._dialog.destroy();},getIcon:function(){return this._icon;},hide:function(){g.hide(this._icon);this._dialog.hide();},insertIntoDialog:function(q){i.setContent(j.find(this._dialog.getContent(),"._51rr"),q);}});e.exports=p;});
+__d("OGCollectionAddedIconRate",["DataStore","Event","copyProperties","tidyEvent"],function(a,b,c,d,e,f){var g=b('DataStore'),h=b('Event'),i=b('copyProperties'),j=b('tidyEvent'),k='OGCollectionAddedIconRate';function l(m,n){this._link=m;g.set(String(n),k,this);}l.disable=function(m){var n=g.get(String(m),k);n._disable();};i(l.prototype,{_disable:function(){j(h.listen(this._link,'click',function(m){m.kill();}));}});e.exports=l;});

@@ -1,0 +1,25 @@
+package cs345evansz2;
+
+public class Player {
+	
+	private String playerName;
+	private Room currentRoom;
+	
+	Player(String inName){
+		playerName = inName;
+	}
+
+	
+	public Room getLocation(){
+		return currentRoom;
+	}
+	
+	
+	public void apportTo(Room apportRoom){
+		currentRoom = apportRoom;
+		System.out.println(apportRoom.roomDescription);
+	}
+	
+	
+	
+}

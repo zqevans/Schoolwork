@@ -1,0 +1,20 @@
+/*
+* Zach Evans
+* CSCI 442
+* Prof. Granier
+* Assignment 3
+*/
+import javax.swing.*;
+import java.awt.Graphics;
+
+public class GaltonBoard {
+
+	public static void main(String[] args) {
+		JFrame frame = new JFrame("Galton Board");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JLabel label = new JLabel("Test");
+		frame.getContentPane().add(label);
+		frame.setVisible(true);
+	}
+
+}

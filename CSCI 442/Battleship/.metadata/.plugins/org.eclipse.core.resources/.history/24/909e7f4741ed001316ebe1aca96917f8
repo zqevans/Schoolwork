@@ -1,0 +1,64 @@
+package battleship;
+import java.util.*;
+public class Ship {
+	private ArrayList<Point> points;
+	private String shipName;
+	
+	/**
+	 * <p>Constructor for a ship </p>
+	 * @param name The name of the ship
+	 * @param pointArray The points the ship occupies
+	 */
+	public Ship(String name, String[] pointArray){
+		this.shipName = name;
+		points = new ArrayList<Point>();
+		for (String pointStr: pointArray){
+			pointStr = pointStr.trim();
+			this.points.add(new Point(pointStr.charAt(0), Integer.parseInt(pointStr.substring(1)))); //Parse and add in new point
+		}
+	}
+	
+	/**
+	 * <p>Checks if the ship is alive or not<p>
+	 * @return Whether or not the ship is alive
+	 */
+	public boolean isAlive(){
+		for (Point p: points){
+			if (!p.isHit()){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * <p>Getter for the ship's name</p>
+	 * @return The name of the ship
+	 */
+	public String getName(){
+		return this.shipName;
+	}
+	
+	/**
+	 * Hits the ship at a specific point
+	 * @param hitPoint Point where the ship is hit
+	 * @return Whether or not the ship has sunk
+	 */
+	public boolean takeHit(Point hitPoint){
+		for (Point p: points){
+			if (Point.samePoint(p, hitPoint)){
+				p.setHit(true);
+			}
+		}
+		return !this.isAlive();
+	}
+	
+	/**
+	 * <p>Gets a list of the ship's points</p>
+	 * @return A list of coordinates the ship occupies
+	 */
+	public ArrayList<Point> getPoints(){
+		return this.points;
+	}
+	
+}

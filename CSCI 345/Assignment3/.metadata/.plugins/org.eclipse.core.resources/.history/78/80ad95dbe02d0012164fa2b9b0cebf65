@@ -1,0 +1,16 @@
+package cs345evansz2;
+
+import java.util.*;
+
+public class GameGlobals {
+	
+	public static Set<Action> allActions;
+	public static Player thePlayer;
+	public static java.io.PrintStream messageOut;
+	public static CommandInterp interp;
+	public static Set<Word> allWords;
+	public static Set<Path> allPaths;
+	
+	allPaths = new Collection<Path>();
+	
+}

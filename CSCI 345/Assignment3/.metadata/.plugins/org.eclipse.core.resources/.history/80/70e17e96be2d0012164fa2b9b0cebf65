@@ -1,0 +1,30 @@
+package cs345evansz2;
+
+import java.util.*;
+
+public class Room {
+	
+	private String roomName;
+	public String roomDescription;
+	private Collection<Path> validPaths;
+	
+	Room(String inName, String inDesc){
+		roomName = inName;
+		roomDescription = inDesc;
+	}
+	
+	public static Room makeRoom(String inName, String inDesc){
+		
+		return new Room(inName, inDesc);
+		
+	}
+	
+	public Collection<Path> getValidPaths(){
+		return validPaths;
+	}
+	
+	public String getName(){
+		return roomName;
+	}
+
+}

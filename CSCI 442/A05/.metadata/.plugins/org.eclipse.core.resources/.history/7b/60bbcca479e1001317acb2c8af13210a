@@ -1,0 +1,52 @@
+/*
+ * Zach Evans
+ * CSCI 442
+ * Spring 2014
+ * Assignment 5
+ * 
+ * This program searches through an XML file containing class data for 
+ * WWU classes and finds time conflicts, printing out relevant information.
+ */
+
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+
+import java.io.*;
+import java.util.*;
+
+
+public class ClassConflicts {
+	private static SAXBuilder builder = new SAXBuilder();
+	private static File coursesFile = new File("WWU_courses.xml");
+	private static Hashtable<String, ArrayList<Element>> coursesByRoom = new Hashtable<String, ArrayList<Element>>();
+	public static void main(String[] args) {
+		try {
+			Document courseDOM = (Document)builder.build(coursesFile);
+			Element rootNode = courseDOM.getRootElement();
+			for (Element course: rootNode.getChildren("course")){
+				for (Element section: course.getChildren("section")){
+					String sectionRoom = section.getAttributeValue("room");
+					if(coursesByRoom.containsKey(sectionRoom)){
+						coursesByRoom.get(sectionRoom).add(section);
+					}
+					else{
+						ArrayList<Element> newRoomArray = new ArrayList<Element>();
+						newRoomArray.add(section);
+						coursesByRoom.put(sectionRoom, newRoomArray);
+					}
+				}
+			}
+			
+			
+			
+		} catch (JDOMException e) {
+			System.out.println(e.getMessage());
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+
+	}
+
+}

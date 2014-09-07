@@ -1,0 +1,42 @@
+package battleship;
+import java.util.*;
+public class Ship {
+	private ArrayList<Point> points;
+	private String shipName;
+	
+	public Ship(String name, String[] pointArray){
+		this.shipName = name;
+		points = new ArrayList<Point>();
+		for (String pointStr: pointArray){
+			pointStr = pointStr.trim();
+			this.points.add(new Point(pointStr.charAt(0), Integer.parseInt(pointStr.substring(1)))); //Parse and add in new point
+		}
+	}
+	
+	public boolean isAlive(){
+		for (Point p: points){
+			if (!p.isHit()){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public String getName(){
+		return this.shipName;
+	}
+	
+	public boolean takeHit(Point hitPoint){
+		for (Point p: points){
+			if (Point.samePoint(p, hitPoint)){
+				p.setHit(true);
+			}
+		}
+		return this.isAlive();
+	}
+	
+	public ArrayList<Point> getPoints(){
+		return this.points;
+	}
+	
+}

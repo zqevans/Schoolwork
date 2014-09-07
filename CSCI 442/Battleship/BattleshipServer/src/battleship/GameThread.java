@@ -1,0 +1,110 @@
+/*
+ * Author: Zach Evans
+ * CSCI 442 Spring 2014
+ * Battleship Project
+ */
+package battleship;
+
+/**
+ * <p>A thread to hold a single game</p>
+ * @author zqevans
+ *
+ */
+public class GameThread extends Thread {
+
+	private Player player1;
+	private Player player2;
+	private boolean gameRunning = true;
+	private Player actionPlayer = null;
+	private Player waitPlayer = null;
+	
+	/**
+	 * <p>A constructor for the thread</p>
+	 * @param player1 The first player in the game
+	 * @param player2 The second player in the game
+	 */
+	public GameThread(Player player1, Player player2){
+		this.player1 = player1;
+		player1.setGame(this);
+		this.player2 = player2;
+		player2.setGame(this);
+	}
+	
+	/**
+	 * <p>This method handles one player attacking another</p>
+	 * @param attacker The player performing the attack
+	 * @param attackPoint The point the player is attacking
+	 */
+	public void attackEnemy(Player attacker, Point attackPoint){
+		Player enemy = (attacker == player1)?player2:player1;
+		Ship hitShip = null;
+		String shipMessage;
+		if (enemy.checkHit(attackPoint)){ //See hit/miss
+			hitShip = enemy.takeHit(attackPoint);
+			if (hitShip != null){ //If it hit and sank the ship
+				shipMessage = "Sink: "+ hitShip.getName()+" ; "+attackPoint.toString();
+			}
+			else{
+				shipMessage = "Hit: "+attackPoint.toString();
+			}
+		}
+		else{
+			shipMessage = "Miss: "+attackPoint.toString();
+		}
+		attacker.sendMessage("you"+shipMessage);
+		enemy.sendMessage("Attack: "+attackPoint.toString());
+		if (enemy.isDead()){
+			attacker.sendMessage("win");
+			enemy.sendMessage("lose");
+			gameRunning = false;
+		}
+		
+	}
+	
+	/**
+	 * <p>This method kills the current game and sends disconnect messages to both players</p>
+	 */
+	public void killGame(){
+		System.out.println("Disconnect kiled game");
+		if (!player1.disconnected){
+			player1.sendMessage("disconnect");
+		}
+		if (!player2.disconnected){
+			player2.sendMessage("disconnect");
+		}
+		this.interrupt();
+	}
+	
+	/**
+	 * This method starts the game
+	 */
+	@Override
+	public void run() {
+		player1.sendMessage("place");
+		player2.sendMessage("place");
+		while (!player1.allPlaced || !player2.allPlaced){//Wait for placing
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				System.out.println(e.getMessage());
+			}
+		} 
+		actionPlayer = player1;
+		waitPlayer = player2;
+		while(gameRunning){
+			actionPlayer.moved = false;
+			actionPlayer.sendMessage("go");
+			waitPlayer.sendMessage("enemyturn");
+			while(!actionPlayer.moved){ //Wait for player to move
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					System.out.println(e.getMessage());
+				}
+			}
+			Player tempPlayer = actionPlayer;
+			actionPlayer = waitPlayer;
+			waitPlayer = tempPlayer;
+		}
+	}
+}

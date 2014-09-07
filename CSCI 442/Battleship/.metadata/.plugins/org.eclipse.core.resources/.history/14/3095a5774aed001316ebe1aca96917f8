@@ -1,0 +1,109 @@
+/*
+ * Author: Zach Evans
+ * CSCI 442 Spring 2014
+ * Battleship Project
+ */
+import javax.swing.*;
+
+import java.io.*;
+import java.net.*;
+
+
+public class ClientMain {
+	private static Socket clientSocket = null; //Connection to the server
+	private static PrintWriter out = null; //Output writer for server socket
+	private static BufferedReader in = null; //Input reader for server socket
+	private static GameBoard gameFrame = null; //Frame to hold the game
+
+
+
+	
+	public static void main(String[] args) {
+		
+		int result = 0;
+		LoginWindow splashLogin = new LoginWindow();
+		
+		
+		while (!splashLogin.validLogin()|| result != JOptionPane.OK_OPTION){ //Reprompt until good input
+			result = JOptionPane.showConfirmDialog(null, splashLogin, "Log In", JOptionPane.OK_CANCEL_OPTION);
+			if (result == JOptionPane.CANCEL_OPTION){
+				return;
+			}
+		}
+		if (result == JOptionPane.OK_OPTION){
+			try {
+				clientSocket = new Socket(splashLogin.getServer(), splashLogin.getPort());
+				out = new PrintWriter(clientSocket.getOutputStream(), true);
+				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			} catch (UnknownHostException e) {
+				System.out.println("Host Exception: "+e.getMessage());
+				return;
+			} catch (IOException e) {
+				System.out.println("IOException: "+e.getMessage());
+			}
+			System.out.println("Starting game");
+			StartGame(splashLogin.getName(), splashLogin.getShips());
+			
+			
+		}
+	}
+	
+	private static void StartGame(String name, String[] shipNames){
+		String serverMessage = null;
+		out.println("Name: "+name);
+		gameFrame = new GameBoard(name, out, shipNames);
+		gameFrame.setVisible(true);
+		try {
+			System.out.println("Starting to read");
+			while ((serverMessage = in.readLine()) != null){
+				processServerMessage(serverMessage);
+			}
+		} catch (IOException e) {
+			System.out.println("IOException: "+e.getMessage());
+		}
+	}
+	
+	private static void processServerMessage(String serverMessage){
+		if (serverMessage.equals("place")){ //Time to start placing
+			System.out.println("Place now");
+			gameFrame.canPlace = true;
+			gameFrame.setGameState("placing");
+		}
+		else if (serverMessage.equals("go")){ //Your turn
+			gameFrame.setGameState("action");
+			gameFrame.setMessage("Your turn!");
+		}
+		else if (serverMessage.equals("enemyturn")){ //Enemy's turn
+			gameFrame.setGameState("enemyturn");
+			gameFrame.setMessage("Waiting for enemy to attack");
+		}
+		else if (serverMessage.equals("disconnect")){ //Enemy disconnected
+			gameFrame.setGameState("disconnect");
+			gameFrame.setMessage("Enemy Disconnected");
+		}
+		else if (serverMessage.startsWith("youHit: ")){ //You hit the enemy
+			gameFrame.attackResult(serverMessage.substring(7).trim(), true);
+		}
+		else if (serverMessage.startsWith("youSink: ")){ //You sank an enemy ship
+			gameFrame.attackResult(serverMessage.substring(8).trim().split(";")[1].trim(), true);
+			gameFrame.setMessage("You sunk their "+serverMessage.substring(8).trim().split(";")[0].trim());
+		}
+		else if (serverMessage.startsWith("youMiss: ")){ //You missed the enemy
+			gameFrame.attackResult(serverMessage.substring(8).trim(), false);
+		}
+		else if (serverMessage.startsWith("Attack: ")){
+			gameFrame.enemyAttack(serverMessage.substring(7).trim());
+		}
+		else if (serverMessage.equals("win")){
+			gameFrame.setGameState("win");
+			gameFrame.setMessage("You win!");
+		}
+		else if (serverMessage.equals("lose")){
+			gameFrame.setGameState("lose");
+			gameFrame.setMessage("You lose.");
+		}
+		else{
+			System.out.println("Unknown message: "+serverMessage);
+		}
+	}
+}

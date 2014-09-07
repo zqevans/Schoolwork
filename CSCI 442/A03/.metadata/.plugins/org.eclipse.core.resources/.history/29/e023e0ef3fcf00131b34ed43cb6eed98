@@ -1,0 +1,9 @@
+import javax.swing.*;
+public class GaltonBoard {
+
+	public static void main(String[] args) {
+		
+
+	}
+
+}

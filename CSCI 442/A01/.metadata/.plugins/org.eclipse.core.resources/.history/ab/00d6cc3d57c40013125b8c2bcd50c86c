@@ -1,0 +1,49 @@
+package a01;
+import java.util.*;
+
+public class ControllerThread extends Thread {	
+	
+	public ControllerThread(){}
+	
+	private int maxBusses = 4; //Max busses that can go in one direction
+	private int lastDirection = 0;
+	private int bussesAtATime = 3; //Busses that can go at one time
+	private int bussesGone = 0;
+
+	private void fillBuffer(Queue<BusThread> bq){
+		int bufLen = 0;
+		while (bufLen < bussesAtATime && bussesGone < maxBusses){
+			if (bq.isEmpty()){
+				break;
+			}
+			try{
+			bufLen++;
+			bussesGone++;
+			BusThread.busBuffer.add(bq.remove());
+			}
+			catch(NoSuchElementException e){
+				
+			}
+			
+		}
+	}
+	
+	public void run(){
+		
+		while(true){
+			if(BusThread.getBusBuffer().isEmpty()){
+				System.out.println("Buf buffer is empty");
+				if (lastDirection == 0){
+					fillBuffer(BusThread.northBusQueue);
+				}
+				else{
+					fillBuffer(BusThread.southBusQueue);
+				}
+				if(bussesGone == maxBusses){
+					lastDirection = lastDirection == 1?0:1;
+					bussesGone = 0;
+				}
+			}
+		}
+	}
+}

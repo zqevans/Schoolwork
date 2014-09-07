@@ -1,0 +1,14 @@
+
+public class BSUtil {
+	/**
+	 * <p>This turns a number into its index in the alphabet
+	 * @param num Number to make into a character
+	 * @return 
+	 */
+	public static char numToChar(int num){
+		return (char)(num-(int)'A' - 1);
+	}
+	public static int charToInt(char inChar){
+		return ((int)inChar)-(int)'A' + 1;
+	}
+}

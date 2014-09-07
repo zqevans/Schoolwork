@@ -1,0 +1,5 @@
+Player turns:
+	server checks hit/miss
+	server sends result to both players
+	server checks for victory
+	attacked player sends out result

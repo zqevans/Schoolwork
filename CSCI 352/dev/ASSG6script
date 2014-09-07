@@ -1,0 +1,4835 @@
+%!PS-Adobe-3.0
+%%Title: arg_parse.c, builtin.c, expand.c, msh.c, redirect.c, proto.h, Makefile, testScript, ASSG6
+%%For: Zachary Quinn Evans
+%%Creator: a2ps version 4.14
+%%CreationDate: Fri Jun  6 08:27:16 2014
+%%BoundingBox: 24 24 588 768
+%%DocumentData: Clean7Bit
+%%Orientation: Landscape
+%%Pages: 20
+%%PageOrder: Ascend
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: font Courier
+%%+ font Courier-Bold
+%%+ font Courier-BoldOblique
+%%+ font Courier-Oblique
+%%+ font Helvetica
+%%+ font Helvetica-Bold
+%%+ font Symbol
+%%+ font Times-Bold
+%%+ font Times-Roman
+%%DocumentProcessColors: Black 
+%%DocumentSuppliedResources: procset a2ps-a2ps-hdr
+%%+ procset a2ps-black+white-Prolog
+%%+ encoding ISO-8859-1Encoding
+%%EndComments
+/a2psdict 200 dict def
+a2psdict begin
+%%BeginProlog
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+
+% EPSF import as in the Red Book
+/BeginInclude {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack 
+  userdict begin
+    0 setgray 0 setlinecap
+    1 setlinewidth 0 setlinejoin
+    10 setmiterlimit [ ] 0 setdash newpath
+    gs_languagelevel 1 ne {
+      false setstrokeadjust false setoverprint 
+    } if
+} bind def
+
+/EndInclude {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+/BeginEPSF {
+  BeginInclude
+  /showpage { } def
+} bind def
+
+/EndEPSF {
+  EndInclude
+} bind def
+
+% Page prefeed
+/page_prefeed {         % bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} bind def
+
+/deffont {
+  findfont exch scalefont def
+} bind def
+
+/reencode_font {
+  findfont reencode 2 copy definefont pop def
+} bind def
+
+% Function c-show (str => -)
+% centers text only according to x axis.
+/c-show { 
+  dup stringwidth pop
+  2 div neg 0 rmoveto
+  show
+} bind def
+
+% Function l-show (str => -)
+% prints texts so that it ends at currentpoint
+/l-show {
+  dup stringwidth pop neg 
+  0 
+  rmoveto show
+} bind def
+
+% center-fit show (str w => -)
+% show centered, and scale currentfont so that the width is less than w
+/cfshow {
+  exch dup stringwidth pop
+  % If the title is too big, try to make it smaller
+  3 2 roll 2 copy
+  gt
+  { % if, i.e. too big
+    exch div
+    currentfont exch scalefont setfont
+  } { % ifelse
+    pop pop 
+  }
+  ifelse
+  c-show			% center title
+} bind def
+
+% Return the y size of the current font
+% - => fontsize
+/currentfontsize {
+  currentfont /FontType get 0 eq {
+    currentfont /FontMatrix get 3 get
+  }{
+    currentfont /FontMatrix get 3 get 1000 mul
+  } ifelse
+} bind def
+
+% reencode the font
+% <encoding-vector> <fontdict> -> <newfontdict>
+/reencode { %def
+  dup length 5 add dict begin
+    { %forall
+      % <vector> <key> <val>
+      1 index /FID ne 
+      { def }{ pop pop } ifelse
+    } forall
+    /Encoding exch def % -
+
+    % Use the font's bounding box to determine the ascent, descent,
+    % and overall height; don't forget that these values have to be
+    % transformed using the font's matrix.
+    % We use `load' because sometimes BBox is executable, sometimes not.
+    % Since we need 4 numbers an not an array avoid BBox from being executed
+    /FontBBox load aload pop
+    FontMatrix transform /Ascent exch def pop
+    FontMatrix transform /Descent exch def pop
+    /FontHeight Ascent Descent sub def
+
+    % Get the underline position and thickness if they're defined.
+    % Use 1 if they are not defined.
+    currentdict /FontInfo 2 copy known
+    { get
+      /UnderlinePosition 2 copy % <FontInfo> /UP <FontInfo> /UP
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+
+      /UnderlineThickness 2 copy % <FontInfo> /UT <FontInfo> /UT
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+      pop % -
+    }{ pop pop
+    } ifelse
+
+    currentdict
+  end 
+} bind def
+
+% composite fonts for ASCII-EUC mixed strings
+% Version 1.2 1/31/1990
+% Original Ken'ichi HANDA (handa@etl.go.jp)
+% Modified Norio Katayama (katayama@rd.nacsis.ac.jp),1998
+% Extend & Fix Koji Nakamaru (maru@on.cs.keio.ac.jp), 1999
+% Anyone can freely copy, modify, distribute this program.
+
+/copyfont {	% font-dic extra-entry-count  copyfont  font-dic
+	1 index maxlength add dict begin
+	{	1 index /FID ne 2 index /UniqueID ne and
+		{def} {pop pop} ifelse
+	} forall
+	currentdict
+	end
+} bind def
+
+/compositefont { % ASCIIFontName EUCFontName RomanScale RomanOffset Rot(T/F) compositefont font
+    /RomanRotation exch def
+    /RomanOffset exch def
+    /RomanScale exch def
+    userdict /fixeucfont_dict known not {
+	userdict begin
+	    /fixeucfont_dict 2 dict begin
+		/UpperByteEncoding [
+		    16#00 1 16#20 { pop 0 } for
+		    16#21 1 16#28 { 16#20 sub } for
+		    16#29 1 16#2F { pop 0 } for
+		    16#30 1 16#74 { 16#27 sub } for
+		    16#75 1 16#FF { pop 0 } for
+		] def
+	        /LowerByteEncoding [
+		    16#00 1 16#A0 { pop /.notdef } for
+		    16#A1 1 16#FE { 16#80 sub 16 2 string cvrs
+				    (cXX) dup 1 4 -1 roll
+				    putinterval cvn } for
+		    /.notdef
+		] def
+		currentdict
+	    end def
+	end
+    } if
+    findfont dup /FontType get 0 eq {
+	14 dict begin
+	    %
+	    % 7+8 bit EUC font
+	    %
+	    12 dict begin
+		/EUCFont exch def
+		/FontInfo (7+8 bit EUC font) readonly def
+		/PaintType 0 def
+		/FontType 0 def
+		/FontMatrix matrix def
+		% /FontName
+		/Encoding fixeucfont_dict /UpperByteEncoding get def
+		/FMapType 2 def
+		EUCFont /WMode known
+		{ EUCFont /WMode get /WMode exch def }
+		{ /WMode 0 def } ifelse
+		/FDepVector [
+		    EUCFont /FDepVector get 0 get
+		    [ 16#21 1 16#28 {} for 16#30 1 16#74 {} for ]
+		    {
+			13 dict begin
+			    /EUCFont EUCFont def
+			    /UpperByte exch 16#80 add def	
+			    % /FontName
+			    /FontInfo (EUC lower byte font) readonly def
+			    /PaintType 0 def
+			    /FontType 3 def
+			    /FontMatrix matrix def
+			    /FontBBox {0 0 0 0} def
+			    /Encoding
+				fixeucfont_dict /LowerByteEncoding get def
+			    % /UniqueID
+			    % /WMode
+			    /BuildChar {
+				gsave
+				exch dup /EUCFont get setfont
+				/UpperByte get
+				2 string
+				dup 0 4 -1 roll put
+				dup 1 4 -1 roll put
+				dup stringwidth setcharwidth
+				0 0 moveto show
+				grestore
+			    } bind def
+			    currentdict
+			end
+			/lowerbytefont exch definefont
+		    } forall
+		] def
+		currentdict
+	    end
+	    /eucfont exch definefont
+	    exch
+	    findfont 1 copyfont dup begin
+		RomanRotation {
+			/FontMatrix FontMatrix
+			[ 0 RomanScale neg RomanScale 0 RomanOffset neg 0 ]
+			matrix concatmatrix def
+		}{
+			/FontMatrix FontMatrix
+			[ RomanScale 0 0 RomanScale 0 RomanOffset ] matrix concatmatrix
+			def
+			/CDevProc
+			    {pop pop pop pop 0 exch -1000 exch 2 div 880} def
+		} ifelse
+	    end
+	    /asciifont exch definefont
+	    exch
+	    /FDepVector [ 4 2 roll ] def
+	    /FontType 0 def
+	    /WMode 0 def
+	    /FMapType 4 def
+	    /FontMatrix matrix def
+	    /Encoding [0 1] def
+	    /FontBBox {0 0 0 0} def
+%	    /FontHeight 1.0 def % XXXX
+	    /FontHeight RomanScale 1.0 ge { RomanScale }{ 1.0 } ifelse def
+	    /Descent -0.3 def   % XXXX
+	    currentdict
+	end
+	/tmpfont exch definefont
+	pop
+	/tmpfont findfont
+    }{
+	pop findfont 0 copyfont
+    } ifelse
+} def	
+
+/slantfont {	% FontName slant-degree  slantfont  font'
+    exch findfont 1 copyfont begin
+    [ 1 0 4 -1 roll 1 0 0 ] FontMatrix exch matrix concatmatrix
+    /FontMatrix exch def
+    currentdict
+    end
+} def
+
+% Function print line number (<string> # -)
+/# {
+  gsave
+    sx cw mul neg 2 div 0 rmoveto
+    f# setfont
+    c-show
+  grestore
+} bind def
+
+% -------- Some routines to enlight plain b/w printings ---------
+
+% Underline
+% width --
+/dounderline {
+  currentpoint
+  gsave
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    0 rlineto
+    stroke
+  grestore
+} bind def
+
+% Underline a string
+% string --
+/dounderlinestring {
+  stringwidth pop
+  dounderline
+} bind def
+
+/UL {
+  /ul exch store
+} bind def
+
+% Draw a box of WIDTH wrt current font
+% width --
+/dobox {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    stroke
+  grestore
+} bind def
+
+/BX {
+  /bx exch store
+} bind def
+
+% Box a string
+% string --
+/doboxstring {
+  stringwidth pop
+  dobox
+} bind def
+
+%
+% ------------- Color routines ---------------
+%
+/FG /setrgbcolor load def
+
+% Draw the background
+% width --
+/dobackground {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    bgcolor aload pop setrgbcolor
+    fill
+  grestore
+} bind def
+
+% Draw bg for a string
+% string --
+/dobackgroundstring {
+  stringwidth pop
+  dobackground
+} bind def
+
+
+/BG {
+  dup /bg exch store
+  { mark 4 1 roll ] /bgcolor exch store } if
+} bind def
+
+
+/Show {
+  bg { dup dobackgroundstring } if
+  ul { dup dounderlinestring } if
+  bx { dup doboxstring } if
+  show
+} bind def
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T {
+  cw mul x0 add
+  bg { dup currentpoint pop sub dobackground } if
+  ul { dup currentpoint pop sub dounderline } if
+  bx { dup currentpoint pop sub dobox } if
+  y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n {
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+/S {
+  Show
+} bind def
+
+%%BeginResource: procset a2ps-a2ps-hdr 2.0 2
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Function title: prints page header.
+% <ct> <rt> <lt> are passed as argument
+/title { 
+  % 1. Draw the background
+  x v get y v get moveto
+  gsave
+    0 th 2 div neg rmoveto 
+    th setlinewidth
+    0.95 setgray
+    pw 0 rlineto stroke
+  grestore
+  % 2. Border it
+  gsave
+    0.7 setlinewidth
+    pw 0 rlineto
+    0 th neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+  % stk: ct rt lt
+  x v get y v get th sub 1 add moveto
+%%IncludeResource: font Helvetica
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  % 3. The left title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    fnfs 0.8 mul hm rmoveto
+    show			% left title
+  grestore
+  exch
+  % stk: ct ltw rt
+  % 4. the right title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    dup
+    pw exch stringwidth pop fnfs 0.8 mul add sub
+    hm
+    rmoveto
+    show			% right title
+  grestore
+  % stk: ct ltw rtw
+  % 5. the center title
+  gsave
+    pw 3 1 roll
+    % stk: ct pw ltw rtw
+    3 copy 
+    % Move to the center of the left room
+    sub add 2 div hm rmoveto
+    % What is the available space in here?
+    add sub fnfs 0.8 mul sub fnfs 0.8 mul sub
+    % stk: ct space_left
+%%IncludeResource: font Helvetica-Bold
+  fHelvetica-Bold fnfs scalefont setfont
+    cfshow
+  grestore
+} bind def
+
+% Function border: prints virtual page border
+/border { %def
+  gsave				% print four sides
+    0 setgray
+    x v get y v get moveto
+    0.7 setlinewidth		% of the square
+    pw 0 rlineto
+    0 ph neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+} bind def
+
+% Function water: prints a water mark in background
+/water { %def
+  gsave
+    scx scy moveto rotate
+%%IncludeResource: font Times-Bold
+  fTimes-Bold 100 scalefont setfont
+    .97 setgray
+    dup stringwidth pop 2 div neg -50 rmoveto
+    show
+  grestore
+} bind def
+
+% Function rhead: prints the right header
+/rhead {  %def
+  lx ly moveto
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  l-show
+} bind def
+
+% Function footer (cf rf lf -> -)
+/footer {
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  dx dy moveto
+  show
+
+  snx sny moveto
+  l-show
+  
+  fnx fny moveto
+  c-show
+} bind def
+%%EndResource
+%%BeginResource: procset a2ps-black+white-Prolog 2.0 1
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T { 
+  cw mul x0 add y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n { %def
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+}  bind def
+
+/S {
+  Show
+} bind def
+
+/p {
+  false UL
+  false BX
+  fCourier bfs scalefont setfont
+  Show
+} bind def
+
+/sy {
+  false UL
+  false BX
+  fSymbol bfs scalefont setfont
+  Show
+} bind def
+
+/k {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/K {
+  false UL
+  false BX
+  fCourier-Bold bfs scalefont setfont
+  Show
+} bind def
+
+/c {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/C {
+  false UL
+  false BX
+  fCourier-BoldOblique bfs scalefont setfont
+  Show 
+} bind def
+
+/l {
+  false UL
+  false BX
+  fHelvetica bfs scalefont setfont
+  Show
+} bind def
+
+/L {
+  false UL
+  false BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show 
+} bind def
+
+/str{
+  false UL
+  false BX
+  fTimes-Roman bfs scalefont setfont
+  Show
+} bind def
+
+/e{
+  false UL
+  true BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show
+} bind def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier
+%%IncludeResource: font Courier-Oblique
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Times-Roman
+%%IncludeResource: font Symbol
+%%IncludeResource: font Courier-BoldOblique
+%%BeginResource: encoding ISO-8859-1Encoding
+/ISO-8859-1Encoding [
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclam /quotedbl /numbersign /dollar /percent /ampersand /quoteright 
+/parenleft /parenright /asterisk /plus /comma /minus /period /slash 
+/zero /one /two /three /four /five /six /seven 
+/eight /nine /colon /semicolon /less /equal /greater /question 
+/at /A /B /C /D /E /F /G 
+/H /I /J /K /L /M /N /O 
+/P /Q /R /S /T /U /V /W 
+/X /Y /Z /bracketleft /backslash /bracketright /asciicircum /underscore 
+/quoteleft /a /b /c /d /e /f /g 
+/h /i /j /k /l /m /n /o 
+/p /q /r /s /t /u /v /w 
+/x /y /z /braceleft /bar /braceright /asciitilde /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclamdown /cent /sterling /currency /yen /brokenbar /section 
+/dieresis /copyright /ordfeminine /guillemotleft /logicalnot /hyphen /registered /macron 
+/degree /plusminus /twosuperior /threesuperior /acute /mu /paragraph /bullet 
+/cedilla /onesuperior /ordmasculine /guillemotright /onequarter /onehalf /threequarters /questiondown 
+/Agrave /Aacute /Acircumflex /Atilde /Adieresis /Aring /AE /Ccedilla 
+/Egrave /Eacute /Ecircumflex /Edieresis /Igrave /Iacute /Icircumflex /Idieresis 
+/Eth /Ntilde /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply 
+/Oslash /Ugrave /Uacute /Ucircumflex /Udieresis /Yacute /Thorn /germandbls 
+/agrave /aacute /acircumflex /atilde /adieresis /aring /ae /ccedilla 
+/egrave /eacute /ecircumflex /edieresis /igrave /iacute /icircumflex /idieresis 
+/eth /ntilde /ograve /oacute /ocircumflex /otilde /odieresis /divide 
+/oslash /ugrave /uacute /ucircumflex /udieresis /yacute /thorn /ydieresis 
+] def
+%%EndResource
+% Initialize page description variables.
+/sh 612 def
+/sw 792 def
+/llx 24 def
+/urx 768 def
+/ury 588 def
+/lly 24 def
+/#copies 1 def
+/th 15.000000 def
+/fnfs 11 def
+/bfs 7.493857 def
+/cw 4.496314 def
+
+% Dictionary for ISO-8859-1 support
+/iso1dict 8 dict begin
+  /fCourier ISO-8859-1Encoding /Courier reencode_font
+  /fCourier-Bold ISO-8859-1Encoding /Courier-Bold reencode_font
+  /fCourier-BoldOblique ISO-8859-1Encoding /Courier-BoldOblique reencode_font
+  /fCourier-Oblique ISO-8859-1Encoding /Courier-Oblique reencode_font
+  /fHelvetica ISO-8859-1Encoding /Helvetica reencode_font
+  /fHelvetica-Bold ISO-8859-1Encoding /Helvetica-Bold reencode_font
+  /fTimes-Bold ISO-8859-1Encoding /Times-Bold reencode_font
+  /fTimes-Roman ISO-8859-1Encoding /Times-Roman reencode_font
+currentdict end def
+/bgcolor [ 0 0 0 ] def
+/bg false def
+/ul false def
+/bx false def
+% The font for line numbering
+/f# /Helvetica findfont bfs .6 mul scalefont def
+/fSymbol /Symbol findfont def
+/hm fnfs 0.25 mul def
+/pw
+   cw 81.400000 mul
+def
+/ph
+   522.321860 th add
+def
+/pmw urx llx sub pw 2 mul sub 1 div def
+/pmh 0 def
+/v 0 def
+/x [
+  0
+  dup pmw add pw add
+] def
+/y [
+  pmh ph add 0 mul ph add
+  dup
+] def
+/scx sw 2 div def
+/scy sh 2 div def
+/snx urx def
+/sny lly 2 add def
+/dx llx def
+/dy sny def
+/fnx scx def
+/fny dy def
+/lx snx def
+/ly ury fnfs 0.8 mul sub def
+/sx 0 def
+/tab 8 def
+/x0 0 def
+/y0 0 def
+%%EndSetup
+
+%%Page: (1-2) 1
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(/* CS 352 -- Argument parsing function) c n
+( *  $Id: arg_parse.c,v 1.2 2014/04/22 02:08:08 evansz2 Exp $) N
+( *  Zach Evans) N
+( *  CSCI 352) N
+( *  Spring 2014) N
+( */) N
+() p n
+() N
+(#include) K
+( ") p
+(proto.h) str
+(") p n
+(#include) K
+( <stdio.h>) p n
+(#include) K
+( <string.h>) p n
+(#include) K
+( <unistd.h>) p n
+(#include) K
+( <errno.h>) p n
+(#include) K
+( <stdlib.h>) p n
+(#include) K
+( <sys/types.h>) p n
+(#include) K
+( <sys/wait.h>) p n
+() N
+() N
+(int) k
+( arg_parse \() p
+(char) k
+( *line, ) p
+(char) k
+( ***argvp\){) p n
+(  ) S
+(int) k
+( argCount = 0; ) p
+(//Number of arguments in the line) c n
+(  ) p
+(//int inArg = 0; //Flag to check if parser is in argument) c n
+(  ) p
+(//int inQuote = 0;) c n
+(  ) p
+(char) k
+( *ptr = line; ) p
+(//Pointer to traverse the arguments) c n
+(  ) p
+(char) k
+( c; ) p
+(//Character to be filled in with argument traversal) c n
+(  ) p
+(int) k
+( idx = 0; ) p
+(//Index in malloc'ed area) c n
+(  ) p
+(int) k
+( state = 0;) p n
+(  ) S
+(/*) c n
+(  States:) N
+(  0: out of argument) N
+(  1: argument starts with quote \(not used in counting args\)) N
+(  2: in an argument) N
+(  3: in a quote) N
+(  4: checking for null argument) N
+(  */) N
+() p n
+(  ) S
+(while) K
+( \(\(c = *ptr\) != 0\){ ) p
+(//Count arguments) c n
+(    ) p
+(if) K
+( \(state == 0\){) p n
+(      ) S
+(if) K
+( \(c == ') p
+(") str
+('\){) p n
+(        argCount++;) N
+(        state = 3;) N
+(      }) N
+(      ) S
+(else) K
+( ) p
+(if) K
+(\(c !=') p
+( ) str
+('\){) p n
+(        argCount++;) N
+(        state = 2;) N
+(      }) N
+(    }) N
+(    ) S
+(else) K
+( ) p
+(if) K
+(\(state == 2\){) p n
+(      ) S
+(if) K
+( \(c == ') p
+(") str
+('\){) p n
+(        state = 3;) N
+(      }) N
+(      ) S
+(else) K
+( ) p
+(if) K
+(\(c == ') p
+( ) str
+('\){) p n
+(        state = 0;) N
+(      }) N
+(    }) N
+(    ) S
+(else) K
+( ) p
+(if) K
+(\(state == 3\){) p n
+(      ) S
+(if) K
+(\(c == ') p
+(") str
+('\){) p n
+(        state = 2;) N
+(      }) N
+(    }) N
+(    ptr++;) N
+(  }) N
+() N
+(  ) S
+(if) K
+( \(state == 3\){ ) p
+(//Odd number of quotes found) c n
+(    dprintf\(1, ") p
+(Odd number of quotes found in line\\n) str
+("\);) p n
+(    ) S
+(return) K
+( -1;) p n
+(  }) N
+(  ) S
+(char) k
+( ** argArray = \() p
+(char) k
+( **\)malloc\() p
+(sizeof) K
+(\() p
+(char) k
+( *\) * \(argCount+1\)\); ) p
+(//Null-term) c n
+(inated array) N
+(                                                            ) p
+(//of pointers to arg) c n
+(arg_parse.c) (Page 1/3) (Apr 21, 14 19:08) title
+border
+/v 1 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(ument letters) c n
+(  ) p
+(if) K
+( \(argArray == ) p
+(NULL) K
+(\){) p n
+(    perror\(") S
+(Malloc) str
+("\);) p n
+(    ) S
+(return) K
+( -1;) p n
+(  }) N
+(  ptr = line; ) S
+(//Reset the pointer) c n
+(  ) p
+(char) k
+( *dst = line;) p n
+(  state = 0;) N
+() N
+() N
+(  ) S
+(while) K
+( \(\(c = *ptr\) != 0\){ ) p
+(//Add zero-characters and pointers, removing quotes) c n
+() p n
+(    ) S
+(if) K
+( \(state == 0\){  ) p
+(//Outside of an argument) c n
+(      ) p
+(if) K
+( \(c == ') p
+(") str
+('\){) p n
+(        state = 1;) N
+(      }) N
+(      ) S
+(else) K
+( ) p
+(if) K
+( \(c != ') p
+( ) str
+('\){) p n
+(        state = 2;) N
+(        *dst = c;) N
+(        argArray[idx] = dst;) N
+(        dst++;) N
+(        idx++;) N
+(      }) N
+(    }) N
+(    ) S
+(else) K
+( ) p
+(if) K
+(\(state == 1\){ ) p
+(//Argument starting with a quote) c n
+(      ) p
+(if) K
+( \(c == ') p
+(") str
+('\){) p n
+(        state = 4;) N
+(      }) N
+(      ) S
+(else) K
+({) p n
+(        state = 3;) N
+(        argArray[idx] = dst;) N
+(        *dst = c;) N
+(        dst++;) N
+(        idx++;) N
+(      }) N
+(    }) N
+(    ) S
+(else) K
+( ) p
+(if) K
+(\(state == 2\){ ) p
+(//in an argument, not in a quote) c n
+(      ) p
+(if) K
+(\(c == ') p
+( ) str
+('\){ ) p
+(//End of argument) c n
+(          state = 0;) p n
+(          *dst = ') S
+(\\0) str
+(';) p n
+(          dst++;) N
+(      }) N
+(      ) S
+(else) K
+( ) p
+(if) K
+(\(c == ') p
+(") str
+('\){) p
+(//Entering a quote) c n
+(        state = 3;) p n
+(      }) N
+(      ) S
+(else) K
+({) p n
+(        *dst = c;) N
+(        dst++;) N
+(      }) N
+(    }) N
+(    ) S
+(else) K
+( ) p
+(if) K
+(\(state == 3\){) p
+(//in a quote in an argument) c n
+(      ) p
+(if) K
+(\(c == ') p
+(") str
+('\){) p n
+(        state = 2;) N
+(      }) N
+(      ) S
+(else) K
+({) p n
+(        *dst = c;) N
+(        dst++;) N
+(      }) N
+(    }) N
+(    ) S
+(else) K
+( ) p
+(if) K
+(\(state == 4\){) p
+(//Two quotes in a row while not in an argument) c n
+(      ) p
+(if) K
+(\(c ==') p
+(") str
+('\){) p n
+(        state = 1; ) S
+(//Argument still hasn't started, back in a quote) c n
+(      }) p n
+(      ) S
+(else) K
+( ) p
+(if) K
+(\(c==') p
+( ) str
+('\) ) p
+(//Null argument) c n
+(      {) p n
+(        state = 0;) N
+(        *dst = ') S
+(\\0) str
+(';) p n
+(        argArray[idx] = dst;) N
+(        dst++;) N
+(arg_parse.c) (Page 2/3) (Apr 21, 14 19:08) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(arg_parse.c) (1/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3) 2
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(        idx++;) p n
+(      }) N
+(      ) S
+(else) K
+({ ) p
+(//argument after even number of quotes) c n
+(        state = 2;) p n
+(        *dst = c;) N
+(        argArray[idx] = dst;) N
+(        dst++;) N
+(        idx++;) N
+(      }) N
+(    }) N
+(    ptr++;) N
+(  }) N
+(  *dst = 0;) N
+(  argArray[argCount] = ) S
+(NULL) K
+(;) p n
+(  *argvp = argArray;) N
+(  ) S
+(return) K
+( argCount;) p n
+(}) N
+(arg_parse.c) (Page 3/3) (Apr 21, 14 19:08) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(arg_parse.c) (2/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1-2) 3
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(/* CS 352 -- Builtin commands) c n
+( *  $Id: builtin.c,v 1.22 2014/06/06 05:44:43 evansz2 Exp $) N
+( *  Zach Evans) N
+( *  CSCI 352) N
+( *  Spring 2014) N
+( */) N
+(#include) K
+( <stdio.h>) p n
+(#include) K
+( <string.h>) p n
+(#include) K
+( <unistd.h>) p n
+(#include) K
+( <errno.h>) p n
+(#include) K
+( <stdlib.h>) p n
+(#include) K
+( <sys/types.h>) p n
+(#include) K
+( <sys/wait.h>) p n
+(#include) K
+( <sys/stat.h>) p n
+(#include) K
+( <ctype.h>) p n
+(#include) K
+( <time.h>) p n
+(#include) K
+( <pwd.h>) p n
+(#include) K
+( <grp.h>) p n
+(#include) K
+( ") p
+(proto.h) str
+(") p n
+() N
+(#define) K
+( NUM_COMMANDS 9) p n
+() N
+() N
+(static) K
+( ) p
+(int) k
+( isNum\() p
+(char) k
+( *numStart\){) p n
+(  ) S
+(int) k
+( isDigit = 1;) p n
+(  ) S
+(char) k
+( c;) p n
+(  ) S
+(while) K
+( \(\(c = *numStart++\) != ') p
+(\\0) str
+('\){) p n
+(    ) S
+(if) K
+( \(!isdigit\(c\)\){) p n
+(      isDigit = 0;) N
+(    }) N
+(  }) N
+(  ) S
+(return) K
+( isDigit;) p n
+(}) N
+() N
+(int) k
+( aecho\() p
+(int) k
+( argc, ) p
+(char) k
+( ** argv, ) p
+(int) k
+( outfd, ) p
+(int) k
+( infd, ) p
+(int) k
+( errfd\){) p n
+(    ) S
+(int) k
+( nMode = 0;) p n
+(    ) S
+(int) k
+( first = 1;) p n
+(    ) S
+(if) K
+( \(argc == 0\){) p n
+(      dprintf\(outfd,") S
+(\\n) str
+("\);) p n
+(      ) S
+(return) K
+( 0;) p n
+(    }) N
+(    ) S
+(if) K
+( \(argc > 1 && strncmp\(") p
+(-n) str
+(", argv[1], 2\) == 0\){) p n
+(      nMode = 1;) N
+(    }) N
+(    ) S
+(int) k
+( idx = nMode?2:1;) p n
+() N
+(    ) S
+(for) K
+( \(; idx < argc; idx++\){) p n
+(      ) S
+(if) K
+( \(first\){) p n
+() N
+(        dprintf\(outfd,") S
+(%s) str
+(", argv[idx]\);) p n
+(        first = 0;) N
+(      }) N
+(      ) S
+(else) K
+({) p n
+(        dprintf\(outfd, ") S
+( %s) str
+(", argv[idx]\);) p n
+(      }) N
+(    }) N
+(    ) S
+(if) K
+( \(!nMode\){) p n
+(      dprintf\(outfd, ") S
+(\\n) str
+("\);) p n
+(    }) N
+(    ) S
+(return) K
+( 0;) p n
+(}) N
+() N
+(int) k
+( exitCommand\() p
+(int) k
+( argc, ) p
+(char) k
+( ** argv, ) p
+(int) k
+( outfd, ) p
+(int) k
+( infd, ) p
+(int) k
+( errfd\){) p n
+(  ) S
+(if) K
+( \(argc == 1\){) p n
+(    exit\(0\);) N
+(  }) N
+(  ) S
+(else) K
+( ) p
+(if) K
+( \(argc == 2\){) p n
+(    exit\(atoi\(argv[1]\)\);) N
+(  }) N
+(builtin.c) (Page 1/5) (Jun 05, 14 23:59) title
+border
+/v 1 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(  ) p
+(else) K
+({) p n
+(    dprintf\(outfd, ") S
+(Usage: exit [status]\\n) str
+("\);) p n
+(    ) S
+(return) K
+( 1;) p n
+(  }) N
+(  ) S
+(return) K
+( 0;) p n
+(}) N
+() N
+(int) k
+( envset\() p
+(int) k
+( argc, ) p
+(char) k
+( ** argv, ) p
+(int) k
+( outfd, ) p
+(int) k
+( infd, ) p
+(int) k
+( errfd\){) p n
+(  ) S
+(if) K
+( \(argc == 3\){) p n
+(    setenv\(argv[1], argv[2], 1\);) N
+(  }) N
+(  ) S
+(else) K
+({) p n
+(    dprintf\(outfd, ") S
+(Usage: envset NAME value\\n) str
+("\);) p n
+(    ) S
+(return) K
+( 1;) p n
+(  }) N
+(  ) S
+(return) K
+( 0;) p n
+(}) N
+() N
+(int) k
+( envunset\() p
+(int) k
+( argc, ) p
+(char) k
+( ** argv, ) p
+(int) k
+( outfd, ) p
+(int) k
+( infd, ) p
+(int) k
+( errfd\){) p n
+(  ) S
+(if) K
+( \(argc == 2\){) p n
+(    unsetenv\(argv[1]\);) N
+(  }) N
+(  ) S
+(else) K
+({) p n
+(    dprintf\(outfd, ") S
+(Usage: envunset NAME\\n) str
+("\);) p n
+(    ) S
+(return) K
+( 1;) p n
+(  }) N
+(  ) S
+(return) K
+( 0;) p n
+(}) N
+() N
+(int) k
+( cd\() p
+(int) k
+( argc, ) p
+(char) k
+( ** argv, ) p
+(int) k
+( outfd, ) p
+(int) k
+( infd, ) p
+(int) k
+( errfd\){) p n
+(  ) S
+(/*) c n
+(  Changes the working directory to dir. Changes working directory to environment) N
+(  variable HOME if set. Error otherwise.) N
+(  Usage: cd [dir]) N
+(  */) N
+() p n
+(  ) S
+(if) K
+( \(argc == 1\){) p n
+(    ) S
+(char) k
+( *home;) p n
+(    ) S
+(if) K
+( \(\(home = getenv\(") p
+(HOME) str
+("\)\)\){) p n
+(      chdir\(home\);) N
+(    }) N
+(    ) S
+(else) K
+({) p n
+(      dprintf\(errfd, ") S
+(No home directory specified.\\n) str
+("\);) p n
+(      ) S
+(return) K
+( 1;) p n
+(    }) N
+(  }) N
+(  ) S
+(else) K
+({) p n
+(    ) S
+(if) K
+( \(chdir\(argv[1]\)<0\){) p n
+(      dprintf\(errfd, ") S
+(%s\\n) str
+(",strerror\(errno\)\);) p n
+(      ) S
+(return) K
+( 1;) p n
+(    }) N
+() N
+(  }) N
+(  ) S
+(return) K
+( 0;) p n
+(}) N
+() N
+(int) k
+( shift\() p
+(int) k
+( argc, ) p
+(char) k
+( **argv, ) p
+(int) k
+( outfd, ) p
+(int) k
+( infd, ) p
+(int) k
+( errfd\){) p n
+(  ) S
+(/*) c n
+(  Shifts $n arguments by index n. Shifts by 1 if called without arguments.) N
+(  Usage: shift [n]) N
+(  */) N
+(  ) p
+(int) k
+( inShift;) p n
+() N
+(  ) S
+(if) K
+(\(argc == 1\){) p n
+(    inShift = 1;) N
+(  }) N
+(  ) S
+(else) K
+( ) p
+(if) K
+( \(argc == 2 && isNum\(argv[1]\)\){) p n
+(    inShift = atoi\(argv[1]\);) N
+(  }) N
+(builtin.c) (Page 2/5) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(builtin.c) (3/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3-4) 4
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(  ) p
+(else) K
+({) p n
+(    dprintf\(outfd, ") S
+(Usage: shift [n]\\n) str
+("\);) p n
+(    ) S
+(return) K
+( 1;) p n
+(  }) N
+(  ) S
+(if) K
+(\(inShift >= \(mainargc-1-shiftIndex\)\){) p n
+(    dprintf\(outfd,") S
+(Shift index too high\\n) str
+("\);) p n
+(    ) S
+(return) K
+( 1;) p n
+(  }) N
+(  ) N
+(  shiftIndex += inShift;) N
+(  ) S
+(return) K
+( 0;) p n
+(}) N
+() N
+(int) k
+( unshift\() p
+(int) k
+( argc, ) p
+(char) k
+( **argv, ) p
+(int) k
+( outfd, ) p
+(int) k
+( infd, ) p
+(int) k
+( errfd\){) p n
+(  ) S
+(/*) c n
+(  Shifts $n arguments back by index n. Resets shift index if called without argu) N
+(ments.) N
+(  Usage: unshift [n]) N
+(  */) N
+(  ) p
+(if) K
+(\(argc == 1\){) p n
+(    shiftIndex = 0;) N
+(    ) S
+(return) K
+( 0;) p n
+(  }) N
+(  ) S
+(else) K
+( ) p
+(if) K
+(\(argc == 2 && isNum\(argv[1]\)\){) p n
+(    ) S
+(int) k
+( inShift = atoi\(argv[1]\);) p n
+(    ) S
+(if) K
+( \(inShift > shiftIndex\){) p n
+(      dprintf\(outfd, ") S
+(Shift index too high\\n) str
+("\);) p n
+(      ) S
+(return) K
+( 1;) p n
+(    }) N
+(    ) S
+(else) K
+({) p n
+(      shiftIndex -= inShift;) N
+(    }) N
+(  }) N
+(  ) S
+(return) K
+( 0;) p n
+(}) N
+() N
+(int) k
+( sstat\() p
+(int) k
+( argc, ) p
+(char) k
+( **argv, ) p
+(int) k
+( outfd, ) p
+(int) k
+( infd, ) p
+(int) k
+( errfd\){) p n
+(  ) S
+(/*) c n
+(  Shows statistics for files given in arguments) N
+(  file-name user-name group-name permission-list num-links filesize modification) N
+(-time) N
+(  Usage: sstat file [file...]) N
+(  */) N
+(  ) p
+(struct) k
+( stat fileStat;) p n
+(  ) S
+(struct) k
+( passwd *userStruct;) p n
+(  ) S
+(struct) k
+( group *groupStruct;) p n
+(  ) S
+(char) k
+( *userPrint;) p n
+(  ) S
+(char) k
+( *groupPrint;) p n
+(  ) S
+(char) k
+( *filePrint;) p n
+() N
+(  ) S
+(if) K
+( \(argc <= 1\){) p n
+(    dprintf\(outfd, ") S
+(Usage: sstat file [file...]\\n) str
+("\);) p n
+(    ) S
+(return) K
+( 1;) p n
+(  }) N
+(  ) S
+(else) K
+({) p n
+(    ) S
+(int) k
+( i;) p n
+(    ) S
+(for) K
+( \(i = 1; i <= argc-1; i++\){) p n
+(      ) S
+(if) K
+( \(stat\(argv[i], &fileStat\) < 0\){) p n
+(        dprintf\(outfd, ") S
+(Invalid file name: %s\\n) str
+(", argv[i]\); ) p
+(/*Bad file name given*/) c n
+() p 8 T () S 16 T () S
+(return) K
+( 1;  ) p n
+(      }) N
+(      ) S
+(else) K
+({) p n
+(        userStruct = getpwuid\(fileStat.st_uid\);) N
+(        groupStruct = getgrgid\(fileStat.st_gid\);) N
+(        ) S
+(if) K
+( \(userStruct != ) p
+(NULL) K
+(\){ ) p
+(/* Set User name or uid */) c n
+(          userPrint = userStruct->pw_name;) p n
+(        }) N
+(        ) S
+(else) K
+({) p n
+(          snprintf\(userPrint, 12, ") S
+(%i) str
+(", fileStat.st_uid\);) p n
+(builtin.c) (Page 3/5) (Jun 05, 14 23:59) title
+border
+/v 1 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(        }) p n
+() N
+(        ) S
+(if) K
+( \(groupStruct != ) p
+(NULL) K
+(\){ ) p
+(/*Set Group name or gid */) c n
+(          groupPrint = groupStruct->gr_name;) p n
+(        }) N
+(        ) S
+(else) K
+({) p n
+(          snprintf\(groupPrint, 12, ") S
+(%i) str
+(", fileStat.st_gid\);) p n
+(        }) N
+() N
+() S 8 T () S 16 T () S
+(if) K
+( \(S_ISBLK\(fileStat.st_mode\)\){ ) p
+(/* File type flag */) c n
+() p 8 T () S 16 T () S 24 T (filePrint = ") S
+(b) str
+(";) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+( \(S_ISCHR\(fileStat.st_mode\)\){) p n
+() S 8 T () S 16 T () S 24 T (filePrint = ") S
+(c) str
+(";) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+( \(S_ISDIR\(fileStat.st_mode\)\){) p n
+() S 8 T () S 16 T () S 24 T (filePrint = ") S
+(d) str
+(";) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+(\(S_ISLNK\(fileStat.st_mode\)\){) p n
+() S 8 T () S 16 T () S 24 T (filePrint = ") S
+(l) str
+(";) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+(\(S_ISSOCK\(fileStat.st_mode\)\){) p n
+() S 8 T () S 16 T () S 24 T (filePrint = ") S
+(s) str
+(";) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+(\(S_ISFIFO\(fileStat.st_mode\)\){) p n
+() S 8 T () S 16 T () S 24 T (filePrint = ") S
+(p) str
+(";) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+(\(S_ISREG\(fileStat.st_mode\)\){) p n
+() S 8 T () S 16 T () S 24 T (filePrint = ") S
+(-) str
+(";) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T (filePrint = ") S
+(?) str
+(";) p n
+() S 8 T () S 16 T (}) N
+() N
+(        dprintf\(outfd, ") S
+(%s %s %s %s%s%s%s%s%s%s%s%s%s %lu %llu %s) str
+(",argv[i],\\) p n
+() S 8 T () S 16 T () S 24 T ( userPrint,groupPrint,filePrint,\\) N
+() S 8 T () S 16 T () S 24 T () S 32 T ( \(\(fileStat.st_mode & S_IRUSR\)?") S
+(r) str
+(":") p
+(-) str
+("\),\\) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T ( \(\(fileStat.st_mode & S_IWUSR\)?") S
+(w) str
+(":") p
+(-) str
+("\)) p n
+(,\\) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T ( \(\(fileStat.st_mode & S_IXUSR\)?") S
+() str n
+(x) S
+(":") p
+(-) str
+("\),\\) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T () S 56 T ( \(\(fileStat.st_mode & S_) N
+(IRGRP\)?") S
+(r) str
+(":") p
+(-) str
+("\),\\) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T () S 56 T () S 64 T ( \(\(fileStat.st_m) N
+(ode & S_IWGRP\)?") S
+(w) str
+(":") p
+(-) str
+("\),\\) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T () S 56 T () S 64 T () S 72 T ( \(\(fileS) N
+(tat.st_mode & S_IXGRP\)?") S
+(x) str
+(":") p
+(-) str
+("\),\\) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T () S 56 T () S 64 T () S 72 T () S 80 T () N
+( \(\(fileStat.st_mode & S_IROTH\)?") S
+(r) str
+(":") p
+(-) str
+("\),\\) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T () S 56 T () S 64 T () S 72 T () S 80 T () N
+() S 0 T ( \(\(fileStat.st_mode & S_IWOTH\)?") S
+(w) str
+(":") p
+(-) str
+("\),\\) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T () S 56 T () S 64 T () S 72 T () S 80 T () N
+() S 0 T () S 8 T ( \(\(fileStat.st_mode & S_IXOTH\)?") S
+(x) str
+(":") p
+(-) str
+("\), \\) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T () S 56 T () S 64 T () S 72 T () S 80 T () N
+() S 0 T () S 8 T () S 16 T ( \() S
+(unsigned) k
+( ) p
+(long) k
+(\)fileStat.st_nlink,\\) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T () S 56 T () S 64 T () S 72 T () S 80 T () N
+() S 0 T () S 8 T () S 16 T () S 24 T ( \() S
+(unsigned) k
+( ) p
+(long) k
+( ) p
+(long) k
+(\)fileStat.st_size,\\) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T () S 56 T () S 64 T () S 72 T () S 80 T () N
+() S 0 T () S 8 T () S 16 T () S 24 T () S 32 T ( asctime\(localtime\(&fileStat.st_mtime\)\)\);) N
+(      }) N
+(    }) N
+(  }) N
+(  ) S
+(return) K
+( 0;) p n
+() N
+(}) N
+() N
+(int) k
+( readCommand\() p
+(int) k
+( argc, ) p
+(char) k
+( **argv, ) p
+(int) k
+( outfd, ) p
+(int) k
+( infd, ) p
+(int) k
+( errfd\){) p n
+() S 8 T () S
+(/*) c n
+() S 8 T (Reads in a line from standard input and puts it in an environment variab) N
+(builtin.c) (Page 4/5) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(builtin.c) (4/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (5) 5
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(le) c n
+() S 8 T (Usage: read [variable name]) N
+() S 8 T (*/) N
+() p 8 T () S
+(char) k
+( inputBuffer[LINELEN]; ) p
+(//Buffer to hold the variable) c n
+() p 8 T () S
+(int) k
+( bufLen = 0;) p n
+() S 8 T () S
+(char) k
+( c = 0;) p n
+() S 8 T () S
+(if) K
+( \(argc != 2\){) p n
+() S 8 T () S 16 T (dprintf\(errfd, ") S
+(Usage: read [variable name]\\n) str
+("\);) p n
+() S 8 T () S 16 T () S
+(return) K
+( 1;) p n
+() S 8 T (}) N
+() S 8 T () N
+() S 8 T () S
+(while) K
+(\(c != ') p
+(\\n) str
+(' && bufLen < LINELEN\){) p n
+() S 8 T () S 16 T (bufLen += read\(infd, &inputBuffer[bufLen], 1\);) N
+() S 8 T () S 16 T (c = inputBuffer[bufLen - 1];) N
+() S 8 T (}) N
+() S 8 T () N
+() S 8 T () N
+() S 8 T (inputBuffer[bufLen - 1] = 0; ) S
+(//Add null terminator) c n
+() p 8 T () S
+(if) K
+(\(setenv\(argv[1], inputBuffer, 1\) < 0\){) p n
+() S 8 T () S 16 T (dprintf\(errfd, ") S
+(Environment Variable Error: %s\\n) str
+(", strerror\(errno\)\);) p n
+() S 8 T () S 16 T () S
+(return) K
+( 1;) p n
+() S 8 T (}) N
+() S 8 T () S
+(return) K
+( 0;) p n
+() S 8 T () N
+() S 8 T () N
+(}) N
+() N
+(static) K
+( ) p
+(const) K
+( ) p
+(char) k
+( *commandNames[NUM_COMMANDS] = {") p
+(aecho) str
+(", ") p
+(exit) str
+(", ") p
+(envset) str
+(", ") p
+(envunset) str
+(") p n
+(, ") S
+(cd) str
+(", ") p
+(shift) str
+(", ") p
+(unshift) str
+(", ") p
+(sstat) str
+(", ") p
+(read) str
+("};) p n
+(static) K
+( ) p
+(int) k
+( \(*commandList[NUM_COMMANDS]\)\() p
+(int) k
+(, ) p
+(char) k
+( **, ) p
+(int) k
+(, ) p
+(int) k
+(, ) p
+(int) k
+(\) = {&aecho, ) p n
+(&exitCommand, &envset, &envunset, &cd, &shift, &unshift, &sstat, &readCommand};) N
+() N
+(int) k
+( runBuiltin\() p
+(int) k
+( argc, ) p
+(char) k
+( **argv, ) p
+(int) k
+( outfd, ) p
+(int) k
+( infd, ) p
+(int) k
+( errfd\){) p n
+(  ) S
+(int) k
+( ran = 0;) p n
+(  ) S
+(int) k
+( i;) p n
+(  ) S
+(char) k
+( *name = argv[0];) p n
+(  ) S
+(for) K
+(\(i = 0; i<NUM_COMMANDS;i++\){) p n
+(    ) S
+(if) K
+( \(strcmp\(name, commandNames[i]\) == 0\){) p n
+(      ) S
+(int) k
+( exitStatus = commandList[i]\(argc, argv, outfd, infd, errfd\);) p n
+(      lastExit = exitStatus;) N
+(      ran = 1;) N
+(    }) N
+(  }) N
+(  ) S
+(return) K
+( ran;) p n
+(}) N
+(builtin.c) (Page 5/5) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(builtin.c) (5/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1-2) 6
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+( ) p
+(/* CS 352 -- Expand Function) c n
+( * $Id: expand.c,v 1.30 2014/06/06 05:44:43 evansz2 Exp $) N
+( *  Zach Evans) N
+( *  CSCI 352) N
+( *  Spring 2014) N
+( */) N
+() p n
+(#include) K
+( ") p
+(proto.h) str
+(") p n
+(#include) K
+( <stdio.h>) p n
+(#include) K
+( <string.h>) p n
+(#include) K
+( <unistd.h>) p n
+(#include) K
+( <errno.h>) p n
+(#include) K
+( <stdlib.h>) p n
+(#include) K
+( <sys/types.h>) p n
+(#include) K
+( <sys/wait.h>) p n
+(#include) K
+( <ctype.h>) p n
+(#include) K
+( <strings.h>) p n
+(#include) K
+( <math.h>) p n
+(#include) K
+( <limits.h>) p n
+(#include) K
+( <dirent.h>) p n
+(#include) K
+( <pwd.h>) p n
+(#include) K
+( <signal.h>) p n
+() N
+(int) k
+( contextMatch\() p
+(char) k
+( *contextString, ) p
+(char) k
+( *matchString\){) p n
+() S 8 T () N
+() S 8 T () S
+(int) k
+( contextLength = strlen\(contextString\);) p n
+() S 8 T () S
+(int) k
+( matchLength = strlen\(matchString\);) p n
+() S 8 T () N
+() S 8 T () S
+(int) k
+( i;) p n
+() S 8 T () S
+(if) K
+( \(matchLength < contextLength || contextLength == 0\){) p n
+() S 8 T () S 16 T () S
+(return) K
+( 0;) p n
+() S 8 T (}) N
+() S 8 T () S
+(for) K
+( \(i = 0; i < contextLength; i++\){) p n
+() S 8 T () S 16 T () N
+() S 8 T () S 16 T () S
+(if) K
+( \(contextString[i] != matchString[matchLength-contextLength+i]) p n
+(\){) N
+() S 8 T () S 16 T () S 24 T () S
+(return) K
+( 0;) p n
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(return) K
+( 1;) p n
+(}) N
+() N
+(int) k
+( replWithContextFiles\() p
+(char) k
+( *contextStart,) p
+(char) k
+( *replBuf, ) p
+(int) k
+( *currentSize, ) p
+(int) k
+() p n
+( maxSize, ) S
+(int) k
+( *contextLength\){) p n
+() S 8 T () S
+(/*) c n
+() S 8 T (contextStart: beginning of the context) N
+() S 8 T (replBuf: The new buffer in which the replaced filenames are placed) N
+() S 8 T (currentSize: Pointer to the variable holding the current size of the buf) N
+(fer) N
+() S 8 T (maxSize: maximum size of the buffer) N
+() S 8 T (contextLength: returns the length of the context for the walking pointer) N
+( to use) N
+() S 8 T (*/) N
+() p 8 T () S
+(char) k
+( contextBuffer[LINELEN];) p n
+() S 8 T () S
+(int) k
+( ctxBufIdx = 0; ) p
+(//Context buffer index) c n
+() p 8 T (DIR *workingDir = opendir\(") S
+(.) str
+("\);) p n
+() S 8 T () S
+(struct) k
+( dirent *currentDir;) p n
+() S 8 T () S
+(int) k
+( nameLen;) p n
+() S 8 T () S
+(int) k
+( first = 1;) p n
+() S 8 T () S
+(int) k
+( replCount = 0;) p n
+() S 8 T () S
+(char) k
+( *walk;) p n
+() S 8 T () S
+(int) k
+( ctxLen;) p n
+() S 8 T () S
+(for) K
+( \(walk = contextStart +1;*walk != ') p
+( ) str
+(' && *walk !=') p
+(") str
+(' && *walk !=0;wal) p n
+(k++\){) N
+() S 8 T () S 16 T (strncpy\(&contextBuffer[ctxBufIdx], walk, 1\);) N
+() S 8 T () S 16 T (ctxBufIdx++;) N
+() S 8 T (}) N
+() S 8 T (contextBuffer[ctxBufIdx] = ') S
+(\\0) str
+(';) p n
+() S 8 T (ctxLen = strlen\(contextBuffer\);) N
+(expand.c) (Page 1/9) (Jun 05, 14 23:59) title
+border
+/v 1 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T (*contextLength = ctxLen;) N
+() S 8 T () N
+() S 8 T () S
+(while) K
+(\(\(currentDir = readdir\(workingDir\)\) != ) p
+(NULL) K
+(\){) p n
+() S 8 T () S 16 T () S
+(if) K
+( \(currentDir->d_name[0] != ') p
+(.) str
+(' && contextMatch\(contextBuffer, ) p n
+(currentDir->d_name\)\){) N
+() S 8 T () S 16 T () S 24 T (nameLen = strlen\(currentDir->d_name\);) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(nameLen <= maxSize-\(*currentSize\)\){) p 64 T () N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(first == 1\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (first = 0;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (strncpy\(&replBuf[*currentSize], ") S
+( ) str
+(", 1\);) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (*currentSize += 1;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T (strncpy\(&replBuf[*currentSize], currentDir->d_na) N
+(me, nameLen\);) N
+() S 8 T () S 16 T () S 24 T () S 32 T (*currentSize += nameLen;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (replCount ++;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(return) K
+( -1;) p n
+() S 8 T () S 16 T () S 24 T (}) S 32 T () N
+() S 8 T () S 16 T () S 24 T () N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(replCount == 0\){ ) p
+(//Keep the pattern in the buffer) c n
+() p 8 T () S 16 T (ctxLen++;) N
+() S 8 T () S 16 T (strncpy\(&replBuf[*currentSize], contextStart, ctxLen\);) N
+() S 8 T () S 16 T (*currentSize += ctxLen;) N
+() S 8 T (}) N
+() S 8 T () N
+() S 8 T () S
+(return) K
+( 0;) p n
+(}) N
+() N
+(int) k
+( replWithAllFiles\() p
+(char) k
+( *replBuf, ) p
+(int) k
+( *currentSize, ) p
+(int) k
+( maxSize\){) p n
+() S 8 T () S
+(/*) c n
+() S 8 T (replBuf: buffer to place in the new files) N
+() S 8 T (currentSize: pointer to the variable holding the current size of the new) N
+( buffer) N
+() S 8 T (maxSize: max size of the new buffer) N
+() S 8 T (*/) N
+() p 8 T (DIR *workingDir = opendir\(") S
+(.) str
+("\);) p n
+() S 8 T () S
+(struct) k
+( dirent *currentDir;) p n
+() S 8 T () S
+(int) k
+( nameLen;) p n
+() S 8 T () S
+(int) k
+( first = 1;) p n
+() S 8 T () S
+(while) K
+(\(\(currentDir = readdir\(workingDir\)\) != ) p
+(NULL) K
+(\){) p n
+() S 8 T () S 16 T () S
+(if) K
+(\(currentDir->d_name[0] != ') p
+(.) str
+('\){) p n
+() S 8 T () S 16 T () S 24 T (nameLen = strlen\(currentDir->d_name\);) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(nameLen <= maxSize-\(*currentSize\)\){) p 64 T () N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(first == 1\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (first = 0;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (strncpy\(&replBuf[*currentSize], ") S
+( ) str
+(", 1\);) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (*currentSize += 1;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T (strncpy\(&replBuf[*currentSize], currentDir->d_na) N
+(me, nameLen\);) N
+() S 8 T () S 16 T () S 24 T () S 32 T (*currentSize += nameLen;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(return) K
+( -1;) p n
+() S 8 T () S 16 T () S 24 T (}) S 32 T () N
+() S 8 T () S 16 T (}) S 24 T () N
+() S 8 T (}) N
+() S 8 T () S
+(return) K
+( 0;) p n
+(}) N
+(expand.c) (Page 2/9) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(expand.c) (6/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3-4) 7
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p n
+() N
+(int) k
+( replWalkInt\() p
+(char) k
+( *replBuf, ) p
+(int) k
+( replInt, ) p
+(int) k
+( *newLen, ) p
+(int) k
+( maxSize\){) p n
+(  ) S
+(/*) c n
+(  replBuf: Buffer to place replacement) N
+(  replInt: The int to replace with its ascii value) N
+(  newLen: pointer to the size index of the new buffer) N
+(  maxSize: max size of the new buffer) N
+(  */) N
+(  ) p
+(int) k
+( intSize = floor\(log10\(INT_MAX\)+1\);) p n
+(  ) S
+(char) k
+( digitBuf[intSize];) p n
+(  ) S
+(int) k
+( intLen = snprintf\(digitBuf, intSize+1, ") p
+(%i) str
+(", replInt\);) p n
+(  ) S
+(if) K
+( \(intLen < maxSize-\(*newLen\)\){) p n
+(    strncpy\(&replBuf[*newLen], digitBuf, intSize\);) N
+(    *newLen += intLen;) N
+(    replBuf[*newLen] = ') S
+( ) str
+(';) p n
+(    ) S
+(return) K
+( 0;) p n
+(  }) N
+(  ) S
+(else) K
+({) p n
+(    ) S
+(return) K
+( -1;) p n
+(  }) N
+(}) N
+(int) k
+( replWalkPid\() p
+(char) k
+( *replBuf, pid_t replpid, ) p
+(int) k
+( *newLen, ) p
+(int) k
+( maxSize\){) p n
+(  ) S
+(/*) c n
+(  replBuf: Buffer to place replacement) N
+(  replInt: The int to replace with its ascii value) N
+(  newLen: pointer to the size index of the new buffer) N
+(  maxSize: max size of the new buffer) N
+(  */) N
+() p 8 T () N
+(  ) S
+(int) k
+( intSize = 10;) p n
+(  ) S
+(char) k
+( digitBuf[intSize];) p n
+(  ) S
+(int) k
+( intLen = snprintf\(digitBuf, intSize+1, ") p
+(%i) str
+(", replpid\);) p n
+(  ) S
+(if) K
+( \(intLen < maxSize-\(*newLen\)\){) p n
+(    strncpy\(&replBuf[*newLen], digitBuf, intSize\);) N
+(    *newLen += intLen;) N
+(    replBuf[*newLen] = ') S
+( ) str
+(';) p n
+(    ) S
+(return) K
+( 0;) p n
+(  }) N
+(  ) S
+(else) K
+({) p n
+(    ) S
+(return) K
+( -1;) p n
+(  }) N
+(}) N
+() N
+(int) k
+( replProgramOutput\() p
+(char) k
+( *newBuf, ) p
+(int) k
+( *newLen,) p
+(char) k
+( *origOpenParen, ) p
+(char) k
+( *origC) p n
+(loseParen, ) S
+(int) k
+( maxSize\){) p n
+() S 8 T () N
+() S 8 T () S
+(/*) c n
+() S 8 T (Name: replProgramOutput) N
+() S 8 T (Input: ) N
+() S 8 T () S 16 T (newBuf: the buffer where the program output is being placed) N
+() S 8 T () S 16 T (newLen: Pointer to the integer keeping track of the length of ne) N
+(wBuf) N
+() S 8 T () S 16 T (origOpenParen: Pointer to the original open parenthesis in the c) N
+(ommand) N
+() S 8 T () S 16 T (origCloseParen: Pointer to the original close parenthesis in the) N
+( command) N
+() S 8 T () S 16 T (maxSize: The maximum size of newBuf) N
+() S 8 T () N
+() S 8 T (Output:) N
+() S 8 T () S 16 T (Returns 0 if successful, -1 otherwise with an error message prin) N
+(ted) N
+() S 8 T (*/) N
+() p 8 T () N
+() S 8 T () S
+(int) k
+( programPipe[2];) p n
+() S 8 T () S
+(char) k
+( outputDataBuffer[LINELEN];) p n
+() S 8 T () S
+(int) k
+( bufLen = 0;) p n
+() S 8 T () S
+(int) k
+( readLen;) p n
+() S 8 T () S
+(int) k
+( valid = 1;) p n
+(expand.c) (Page 3/9) (Jun 05, 14 23:59) title
+border
+/v 1 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S
+(if) K
+( \(pipe\(programPipe\)<0\){) p n
+() S 8 T () S 16 T (dprintf\(2,") S
+(Couldn't create pipe) str
+("\);) p n
+() S 8 T () S 16 T () S
+(return) K
+( -1;) p n
+() S 8 T (}) N
+() S 8 T (*origCloseParen = 0;) N
+() S 8 T () S
+(int) k
+( processResult = processline\(origOpenParen+1, 0, programPipe[1], 2\);) p n
+() S 8 T () S
+(if) K
+( \(processResult < 0\){ ) p
+(//Error) c n
+() p 8 T () S 16 T (dprintf\(2,") S
+(Error processing line\\n) str
+("\);) p n
+() S 8 T () S 16 T () S
+(return) K
+( -1;) p n
+() S 8 T (}) N
+() S 8 T () S
+(else) K
+({ ) p
+(//No error, might be a child) c n
+() p 8 T () S 16 T (close\(programPipe[1]\);) N
+() S 8 T () S 16 T () S
+(while) K
+(\(\(readLen = read\(programPipe[0], &outputDataBuffer[bufLen],) p n
+( LINELEN-bufLen\)\) > 0 && bufLen < LINELEN\){) N
+() S 8 T () S 16 T () S 24 T (bufLen += readLen;) S 48 T () N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(bufLen == LINELEN\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(if) K
+( \(readLen != 0\){) p n
+() S 8 T () S 16 T () S 24 T (valid = 0;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(processResult > 0\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (kill\(processResult, SIGINT\);) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T (close\(programPipe[0]\);) S 40 T () N
+() S 8 T () S 16 T () S
+(int) k
+( outputWalk;) p n
+() S 8 T () S 16 T () S
+(if) K
+( \(valid\){) p n
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(outputDataBuffer[bufLen-1] == ') p
+(\\n) str
+('\){ ) p
+(//Replace final) c n
+( \\n with null-terminator) N
+() p 8 T () S 16 T () S 24 T () S 32 T (bufLen--;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(for) K
+( \(outputWalk = 0;outputWalk < bufLen; outputWalk++\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(outputDataBuffer[outputWalk] == ') p
+(\\n) str
+('\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (outputDataBuffer[outputWalk] = ') S
+( ) str
+(';) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(if) K
+( \(processResult > 0\){ ) p
+(//Child to wait on) c n
+() p 8 T () S 16 T () S 24 T () S
+(int) k
+( waitStatus;) p n
+() S 8 T () S 16 T () S 24 T (waitingCPID = processResult; ) S
+(//For the SIGINT handler) c n
+() p 8 T () S 16 T () S 24 T () S
+(if) K
+( \(waitpid\(processResult, &waitStatus, 0\) < 0\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (perror\(") S
+(wait) str
+("\);) p n
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T (waitingCPID = 0; ) S
+(//No longer waiting on a child) c n
+() p 8 T () S 16 T () S 24 T () S
+(if) K
+( \(WIFEXITED\(waitStatus\)\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (lastExit = WEXITSTATUS\(waitStatus\);) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (lastExit = 127;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(if) K
+( \(bufLen > maxSize-*newLen || !valid\){) p n
+() S 8 T () S 16 T () S 24 T (dprintf\(2, ") S
+(Expanded string too long\\n) str
+("\);) p n
+() S 8 T () S 16 T () S 24 T () S
+(return) K
+( -1;) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T (strncpy\(&newBuf[*newLen], outputDataBuffer, bufLen\);) N
+() S 8 T () S 16 T (*newLen += bufLen;) N
+() S 8 T () S 16 T (*origCloseParen = ') S
+(\)) str
+(';) p n
+() S 8 T (}) N
+() S 8 T () S
+(return) K
+( 0;) p n
+(}) N
+() N
+(int) k
+( parseInt\() p
+(char) k
+( *start, ) p
+(char) k
+( **finish\){) p n
+(  ) S
+(char) k
+( digitBuf[LINELEN];) p n
+(  ) S
+(int) k
+( i = 0;) p n
+(  ) S
+(char) k
+( c;) p n
+(  bzero\(digitBuf, LINELEN\);) N
+(  ) S
+(while) K
+(\(isdigit\(c = *start++\)\){) p n
+(expand.c) (Page 4/9) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(expand.c) (7/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (5-6) 8
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(    digitBuf[i++] = c;) p n
+(  }) N
+(  *finish = --start;) N
+(  ) S
+(return) K
+( atoi\(digitBuf\);) p n
+(}) N
+() N
+(char) k
+( *findEndChar\() p
+(char) k
+( *start, ) p
+(char) k
+( endChar, ) p
+(int) k
+( *len\){) p n
+(  ) S
+(/*) c n
+(  start: pointer to the character to start the search from) N
+(  endChar: The character you're looking for) N
+(  len: Pointer to an integer to fill with the length of the argument) N
+() N
+(  Returns pointer to the character you're attempting to find or NULL if never fo) N
+(und) N
+(  */) N
+(  ) p
+(char) k
+( c;) p n
+(  ) S
+(int) k
+( dist = 0;) p n
+(  ) S
+(char) k
+( *walk = start;) p n
+(  ) S
+(while) K
+( \(\(c = *walk\)!=0\){) p n
+(    ) S
+(if) K
+(\(c == endChar\){) p n
+(      *len = dist;) N
+(      ) S
+(return) K
+( walk;) p n
+(    }) N
+(    dist++;) N
+(    walk++;) N
+(  }) N
+(  ) S
+(return) K
+( ) p
+(NULL) K
+(;) p n
+(}) N
+() N
+(char) k
+( *findEndParen\() p
+(char) k
+( *start, ) p
+(int) k
+( *len\){) p n
+() S 8 T () S
+(/*) c n
+() S 8 T (start: pointer to the opening paren) N
+() S 8 T (len: pointer to int to fill with the length of the enclosed content) N
+() S 8 T () N
+() S 8 T (returns pointer to the closing paren, NULL if none found) N
+() S 8 T (*/) N
+() p 8 T () N
+() S 8 T () S
+(int) k
+( parenCount = 0;) p n
+() S 8 T () S
+(int) k
+( dist = 0;) p n
+() S 8 T () S
+(char) k
+( c;) p n
+() S 8 T () S
+(char) k
+( *walk = start;) p n
+() S 8 T () S
+(while) K
+( \(\(c = *walk\) != 0\){) p n
+() S 8 T () S 16 T () S
+(if) K
+( \(c == ') p
+(\() str
+('\){) p n
+() S 8 T () S 16 T () S 24 T (parenCount++;) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+( \(c == ') p
+(\)) str
+('\){) p n
+() S 8 T () S 16 T () S 24 T (parenCount--;) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(if) K
+( \(parenCount == 0\){) p n
+() S 8 T () S 16 T () S 24 T (*len = dist-1;) N
+() S 8 T () S 16 T () S 24 T () S
+(return) K
+( walk;) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T (dist++;) N
+() S 8 T () S 16 T (walk++;) N
+() S 8 T (}) N
+() S 8 T () S
+(return) K
+( ) p
+(NULL) K
+(;) p n
+() S 8 T () N
+(}) N
+() N
+(char) k
+( *findReplaceEnv\() p
+(char) k
+( *replStart, ) p
+(int) k
+( argLen\){) p n
+(  ) S
+(/*) c n
+(  replStart: points to $ in "${HOME}") N
+(  argLen: ${HOME} would have argLen of 4) N
+() N
+(  Returns string pointing to the proper environment variable string.) N
+(  */) N
+() p n
+(  ) S
+(char) k
+( getEnvBuf[LINELEN]; ) p
+(//Buffer for input to getenv\(\)) c n
+(  strncpy\(getEnvBuf, replStart+2, argLen\); ) p
+(//Copy over just the name of the argu) c n
+(expand.c) (Page 5/9) (Jun 05, 14 23:59) title
+border
+/v 1 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(ment) c n
+(  getEnvBuf[argLen] = 0; ) p
+(//add null terminator) c n
+(  ) p
+(char) k
+( *envString;) p n
+(  ) S
+(if) K
+( \(\(envString = getenv\(getEnvBuf\)\)!=) p
+(NULL) K
+(\){) p n
+(    ) S
+(return) K
+( envString;) p n
+(  }) N
+(  ) S
+(else) K
+({) p n
+(    ) S
+(return) K
+( "";) p n
+(  }) N
+() N
+(}) N
+() N
+() N
+() N
+(char) k
+( findNextChar\() p
+(char) k
+( *start\){) p n
+(  ) S
+(/*) c n
+(  start: Pointer to the starting character) N
+() N
+(  Returns character after start) N
+(  */) N
+(  ) p
+(return) K
+(\(*\(start+1\)\);) p n
+(}) N
+() N
+(int) k
+( expand \() p
+(char) k
+( *orig, ) p
+(char) k
+( *new, ) p
+(int) k
+( newsize\){) p n
+(  ) S
+(/*) c n
+(  orig: Original buffer \(variables to be replaced\)) N
+(  new: New buffer \(variables have been replaced\)) N
+(  newsize: Size of the new buffer to avoid overflow) N
+(  */) N
+(  ) p
+(int) k
+( origLen = strlen\(orig\); ) p
+(//Length of the original buffer) c n
+(  ) p
+(int) k
+( newLen = 0; ) p
+(//Length of the new buffer\(updated with writes\)) c n
+(  ) p
+(char) k
+( *replEnd; ) p
+(//Pointer to the end of a replacement) c n
+(  ) p
+(int) k
+( replLen; ) p
+(//Length of the text to be replaced) c n
+(  ) p
+(char) k
+( c; ) p
+(//Character for parsing string) c n
+(  ) p
+(char) k
+( *walk = orig; ) p
+(//Walking pointer for original buffer) c n
+(  ) p
+(int) k
+( inQuote = 0;) p n
+() N
+(  ) S
+(while) K
+( \(\(c = *walk\)!=0 && walk-orig < origLen && newLen < newsize && !hadSigInt) p n
+(\){) N
+(    ) S
+(if) K
+( \(c == ') p
+($) str
+('\){) p n
+(      ) S
+(char) k
+( next = findNextChar\(walk\); ) p
+(//Next character in the buffer) c n
+() p n
+(      ) S
+(if) K
+(\(next == ') p
+($) str
+('\){ ) p
+(//Found $$, pid expansion) c n
+(        replWalkPid\(new, getpid\(\), &newLen, LINELEN\);) p n
+() S 8 T () S 16 T (walk += 2;) N
+(    ) N
+(      }) N
+() S 8 T (  ) S
+(else) K
+( ) p
+(if) K
+( \(next == ') p
+(\() str
+('\){ ) p
+(//found $\(, command expansion) c n
+() p 8 T () S 16 T (  replEnd = findEndParen\(walk+1, &replLen\);) N
+() S 8 T () S 16 T (  ) S
+(if) K
+( \(replEnd == ) p
+(NULL) K
+(\){) p n
+() S 8 T () S 16 T () S 24 T (  dprintf\(2, ") S
+(No matching \) found\\n) str
+("\);) p n
+() S 8 T () S 16 T () S 24 T (  ) S
+(return) K
+( -1;) p n
+() S 8 T () S 16 T (  }) N
+() S 8 T () S 16 T (  ) S
+(if) K
+( \(replProgramOutput\(new, &newLen, walk+1, replEnd, newsize\) ) p n
+(< 0\){) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(return) K
+( -1;) p n
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (walk = replEnd+1;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T (  }) N
+(      ) S
+(else) K
+( ) p
+(if) K
+(\(next ==') p
+({) str
+('\){ ) p
+(//found ${, environment variable expansion) c n
+(        replEnd = findEndChar\(walk+2, ') p
+(}) str
+(', &replLen\); ) p
+(//Start the search on H of) c n
+( "${HOME}", will fill replLen with 0 if given "${}") N
+(        ) p
+(if) K
+( \(replEnd == ) p
+(NULL) K
+(\){) p n
+(          dprintf\(2, ") S
+(Missing end brace for environment variable\\n) str
+("\);) p n
+(          ) S
+(return) K
+( -1;) p n
+(        }) N
+(        ) S
+(else) K
+({) p n
+(expand.c) (Page 6/9) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(expand.c) (8/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (7-8) 9
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(          ) p
+(char) k
+( *envReplace = findReplaceEnv\(walk, replLen\); ) p
+(//String that replac) c n
+(es variable) N
+(          ) p
+(int) k
+( envLen = strlen\(envReplace\); ) p
+(//Length of the new text) c n
+(          ) p
+(if) K
+( \(newsize-newLen >= envLen\){) p n
+(            strncpy\(&new[newLen], envReplace, envLen\); ) S
+(//Copy over the new text) c n
+(            newLen+= envLen; ) p
+(//Increase the length of the new line by the size o) c n
+(f the new text) N
+(            walk = replEnd+1; ) p
+(//Move the walking pointer to the end of the varia) c n
+(ble text) N
+(          }) p n
+(          ) S
+(else) K
+({) p n
+(            dprintf\(2, ") S
+(Expanded string too long\\n) str
+("\);) p n
+(            ) S
+(return) K
+( -1;) p n
+(          }) N
+(        }) N
+(      }) N
+(      ) S
+(else) K
+( ) p
+(if) K
+(\(isdigit\(next\)\){ ) p
+(//Found argv replacement) c n
+(        ) p
+(int) k
+( argNum = parseInt\(walk+1, &walk\); ) p
+(//Moves walk past the int) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(argNum == 0 && interactive\){) p n
+() S 8 T () S 16 T () S 24 T (strncpy\(&new[newLen], mainargv[0], strlen\(mainargv[0]\)\);) N
+() S 8 T () S 16 T () S 24 T (newLen += strlen\(mainargv[0]\);) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+({) p n
+() S 8 T (        argNum += shiftIndex;) N
+() S 8 T (        ) S
+(if) K
+( \(argNum < mainargc - 1\){) p n
+() S 8 T (          ) S
+(int) k
+( newArgLen = strlen\(mainargv[argNum+1]\);) p n
+() S 8 T (          strncpy\(&new[newLen], mainargv[argNum+1], newArgLen\); ) S
+(//Copy i) c n
+(n argument) N
+() p 8 T (          newLen += newArgLen;) N
+() S 8 T (        }) N
+() S 8 T () S 16 T (}) N
+(      }) N
+(      ) S
+(else) K
+( ) p
+(if) K
+(\(next == ') p
+(#) str
+('\){ ) p
+(//Show number of available arguments) c n
+() p 8 T () S 16 T (  ) S
+(if) K
+( \(interactive\){) p n
+() S 8 T () S 16 T () S 24 T (  replWalkInt\(new, 1, &newLen, LINELEN\); ) S
+(//Interactive a) c n
+(lways shows 1) N
+() p 8 T () S 16 T (  }) N
+() S 8 T () S 16 T (  ) S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T (  replWalkInt\(new, mainargc-1-shiftIndex, &newLen, LINEL) N
+(EN\); ) S
+(//Replace with $#) c n
+() p 8 T () S 16 T (  }) N
+(        walk += 2;) N
+(      }) N
+(      ) S
+(else) K
+( ) p
+(if) K
+(\(next == ') p
+(?) str
+('\){ ) p
+(//Show last exit value) c n
+() p 8 T () S 16 T (replWalkInt\(new, lastExit, &newLen, LINELEN\);) N
+(        walk += 2;) N
+() N
+(      ) N
+(      }) N
+(      ) S
+(else) K
+({ ) p
+(//Not a special $) c n
+(        strncpy\(&new[newLen], walk, 1\); ) p
+(//Copy over $) c n
+(        newLen++;) p n
+(        walk++;) N
+(      }) N
+(    }) N
+() S 8 T () S
+(else) K
+( ) p
+(if) K
+( \(c == ') p
+(*) str
+('\){) p n
+() S 8 T () S 16 T () S
+(if) K
+( \(\(*\(walk+1\) == ') p
+( ) str
+(' ||*\(walk+1\) == ') p
+(\\0) str
+('\) && walk-orig >= 1 && \() p n
+(*\(walk-1\)== ') S
+( ) str
+('  || *\(walk-1\) == ') p
+(") str
+('\)\){) p n
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+(\(replWithAllFiles\(new, &newLen, newsize\) < 0\){ ) p
+(//Repla) c n
+(ce with all filenames) N
+() p 8 T () S 16 T () S 24 T () S 32 T (dprintf\(2, ") S
+(Expanded string too long\\n) str
+("\);) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(return) K
+( -1;) p n
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+(\(*\(walk+1\) != ') p
+( ) str
+(' && *\(walk+1\) != ') p
+(\\0) str
+(' && walk-orig >= 1\){) p n
+() S 8 T () S 16 T () S 24 T () S
+(int) k
+( contextLength;) p n
+() S 8 T () S 16 T () S 24 T () N
+() S 8 T () S 16 T () S 24 T (replWithContextFiles\(walk, new, &newLen, newsize, &conte) N
+(xtLength\); ) S
+(//Replace with file names matching context) c n
+(expand.c) (Page 7/9) (Jun 05, 14 23:59) title
+border
+/v 1 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S 16 T () S 24 T (walk += contextLength;) N
+() S 8 T () S 16 T (} ) S 24 T () N
+() S 8 T () S 16 T () S
+(else) K
+({) p n
+() S 8 T (        strncpy\(&new[newLen], walk, 1\); ) S
+(//Copy over *) c n
+() p 8 T (        newLen++;) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T (walk++;) N
+() S 8 T (}) N
+() S 8 T () S
+(else) K
+( ) p
+(if) K
+( \(c == ') p
+(") str
+('\){ ) p
+(//Finding quotes) c n
+() p 8 T () S 16 T () N
+() S 8 T () S 16 T (inQuote = !inQuote;) N
+(        strncpy\(&new[newLen], walk, 1\); ) S
+(//Copy over one character) c n
+(        newLen++;) p n
+() S 8 T () S 16 T (walk++;) N
+(       ) N
+() S 8 T (}) N
+() S 8 T () S
+(else) K
+( ) p
+(if) K
+( \(c == ') p
+(~) str
+('\){ ) p
+(//Home directory expansion) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(\(walk-orig == 0 || *\(walk-1\) == ') p
+( ) str
+('\)\){) p n
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+(\(\(*\(walk+1\) == ') p
+( ) str
+(' || *\(walk+1\) == ') p
+(/) str
+(' || *\(walk+1\) == ) p n
+(0\)\){ ) S
+(//Before ) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S
+(struct) k
+( passwd *userInfo = getpwuid\(getuid\(\)\);) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(int) k
+( dirLen = strlen\(userInfo->pw_dir\);) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (strncpy\(&new[newLen], userInfo->pw_dir, dirLen\);) N
+() S 8 T () S 16 T () S 24 T () S 32 T (newLen += dirLen;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (walk++;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(int) k
+( spaceCount = 0;) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(char) k
+( *spaceWalk = walk;) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(char) k
+( nameBuffer[32];) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(for) K
+(\(;*++spaceWalk != ') p
+( ) str
+(' && *spaceWalk != 0 && *) p n
+(spaceWalk != ') S
+(/) str
+(';spaceCount++\); ) p
+(//Move spaceWalk to next space) c n
+() p 8 T () S 16 T () S 24 T () S 32 T (strncpy\(nameBuffer, walk+1, spaceCount\); ) S
+(//Copy ) c n
+(name into buffer) N
+() p 8 T () S 16 T () S 24 T () S 32 T (nameBuffer[spaceCount] = 0; ) S
+(//Add null terminato) c n
+(r) N
+() p 8 T () S 16 T () S 24 T () S 32 T () S
+(struct) k
+( passwd *userInfo = getpwnam\(nameBuffer\);) p
+(/) c n
+(/Get home directory) N
+() p 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(userInfo != ) p
+(NULL) K
+(\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S
+(int) k
+( dirLen = strlen\(userInfo->pw_dir\);) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (strncpy\(&new[newLen], userInfo -> pw_dir) N
+(, dirLen\); ) S
+(//Copy in name) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T (newLen += dirLen;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (walk+=1+strlen\(nameBuffer\);) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (strncpy\(&new[newLen], walk, spaceCount+1) N
+(\);) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (newLen += spaceCount;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (walk = spaceWalk - 1;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T () N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T (strncpy\(&new[newLen], walk, 1\);) N
+() S 8 T () S 16 T () S 24 T (newLen++;) N
+() S 8 T () S 16 T () S 24 T (walk++;) N
+() S 8 T () S 16 T (}) S 24 T () S 32 T () N
+() S 8 T (}) N
+() S 8 T () S
+(else) K
+( ) p
+(if) K
+( \(c == ') p
+(\\\\) str
+('\){) p n
+() S 8 T () S 16 T () S
+(if) K
+( \(*\(walk+1\) == ') p
+(*) str
+('\){) p n
+() S 8 T (        strncpy\(&new[newLen], walk+1, 1\); ) N
+() S 8 T (        newLen++;) N
+() S 8 T (        walk+=2;) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+({) p n
+(expand.c) (Page 8/9) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(expand.c) (9/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (9) 10
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T (        strncpy\(&new[newLen], walk, 1\); ) S
+(//Copy over one character) c n
+() p 8 T (        newLen++;) N
+() S 8 T (        walk++;) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+(    ) S
+(else) K
+({ ) p
+(//Not a special character) c n
+(      strncpy\(&new[newLen], walk, 1\); ) p
+(//Copy over one character) c n
+(      newLen++;) p n
+(      walk++;) N
+(    }) N
+(  }) N
+(  ) S
+(if) K
+( \(hadSigInt\){) p n
+() S 8 T (  hadSigInt = 0;) N
+() S 8 T (  ) S
+(return) K
+( -1;) p n
+(  }) N
+(  new[newLen] = 0;) N
+(  ) S
+(return) K
+( 1;) p n
+(}) N
+(expand.c) (Page 9/9) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(expand.c) (10/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1-2) 11
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(/* CS 352 -- Mini Shell!) c n
+( *  $Id: msh.c,v 1.23 2014/06/06 05:44:43 evansz2 Exp $) N
+( *  Starting code: Phil Nelson) N
+( *  Zach Evans) N
+( *  CSCI 352) N
+( *  Spring 2014) N
+( */) N
+() p n
+(#include) K
+( <stdio.h>) p n
+(#include) K
+( <string.h>) p n
+(#include) K
+( <unistd.h>) p n
+(#include) K
+( <errno.h>) p n
+(#include) K
+( <stdlib.h>) p n
+(#include) K
+( <sys/types.h>) p n
+(#include) K
+( <sys/wait.h>) p n
+(#include) K
+( <signal.h>) p n
+(#include) K
+( ") p
+(proto.h) str
+(") p n
+() N
+(int) k
+( mainargc;) p n
+(char) k
+( **mainargv;) p n
+(int) k
+( shiftIndex;) p n
+(int) k
+( lastExit;) p n
+(int) k
+( interactive;) p n
+(int) k
+( waitingCPID;) p n
+(int) k
+( hadSigInt;) p n
+(/* Constants */) c n
+() p n
+(FILE) k
+( *inFile;) p n
+(int) k
+( outputfd;) p n
+(FILE) k
+( *errFile;) p n
+() N
+(/* Prototypes */) c n
+() p n
+(int) k
+( processline \() p
+(char) k
+( *line, ) p
+(int) k
+( infd, ) p
+(int) k
+( outfd, ) p
+(int) k
+( flags\);) p n
+() N
+(char) k
+(* findPipeChar\() p
+(char) k
+( *line\){) p n
+() S 8 T () S
+(int) k
+( inQuote = 0;) p n
+() S 8 T () S
+(int) k
+( i;) p n
+() S 8 T () S
+(int) k
+( lineLen = strlen\(line\);) p n
+() S 8 T () S
+(char) k
+( c;) p n
+() S 8 T () S
+(for) K
+( \(i = 0; i < lineLen; i++\){) p n
+() S 8 T () S 16 T (c = line[i];) N
+() S 8 T () S 16 T () S
+(if) K
+(\(c== ') p
+(") str
+('\){) p n
+() S 8 T () S 16 T () S 24 T (inQuote = !inQuote;) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+(\(!inQuote && \(c ==') p
+(|) str
+('\)\){) p n
+() S 8 T () S 16 T () S 24 T () S
+(return) K
+( &line[i];) p n
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(return) K
+( ) p
+(NULL) K
+(;) p n
+(}) N
+() N
+(void) k
+( removeComments\() p
+(char) k
+(* line\){) p n
+() S 8 T () S
+(int) k
+( inQuote = 0;) p n
+() S 8 T () S
+(int) k
+( i;) p n
+() S 8 T () S
+(int) k
+( lineLen = strlen\(line\);) p n
+() S 8 T () S
+(char) k
+( c;) p n
+() S 8 T () S
+(for) K
+( \(i = 0; i < lineLen; i++\){) p n
+() S 8 T () S 16 T (c = line[i];) N
+() S 8 T () S 16 T () S
+(if) K
+( \(c == ') p
+(#) str
+(' && !inQuote\){) p n
+() S 8 T () S 16 T () S 24 T (line[i] = ') S
+(\\0) str
+(';) p n
+() S 8 T () S 16 T () S 24 T () S
+(return) K
+(;) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+(\(c== ') p
+(") str
+('\){) p n
+() S 8 T () S 16 T () S 24 T (inQuote = !inQuote;) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(return) K
+(;) p n
+(}) N
+(msh.c) (Page 1/5) (Jun 05, 14 23:59) title
+border
+/v 1 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p n
+(/*SIGINT handler*/) c n
+(void) k
+( sigintHandler\() p
+(int) k
+( signum\){) p n
+() S 8 T (hadSigInt = 1;) N
+() S 8 T () S
+(if) K
+( \(waitingCPID\){) p n
+() S 8 T () S 16 T (kill\(waitingCPID, SIGINT\);) N
+() S 8 T (}) N
+(}) N
+() N
+(/* Shell main */) c n
+() p n
+(int) k n
+(main \() p
+(int) k
+( argc, ) p
+(char) k
+( **argv\)) p n
+({) N
+(    ) S
+(char) k
+(   buffer [LINELEN];) p n
+(    ) S
+(int) k
+(    len;) p n
+(    interactive = 1;) N
+(    mainargc = argc;) N
+(    mainargv = argv;) N
+(    outputfd = 1;) N
+(    errFile = stderr;) N
+(    shiftIndex = 0;) N
+(    lastExit = 0;) N
+() S 8 T (hadSigInt = 0;) N
+() S 8 T (signal\(SIGINT, sigintHandler\);) N
+() N
+(    ) S
+(if) K
+( \(argc == 1\){) p n
+(      inFile = stdin;) N
+(    }) N
+() N
+(    ) S
+(else) K
+( ) p
+(if) K
+(\(argc >= 2\){) p n
+(      interactive = 0;) N
+(      inFile = fopen\(mainargv[1], ") S
+(r) str
+("\);) p n
+(      ) S
+(if) K
+( \(inFile == ) p
+(NULL) K
+(\){) p n
+(        fprintf\(errFile, ") S
+(Couldn't open file: %s\\n) str
+(", mainargv[1]\);) p n
+(        exit\(127\);) N
+(      }) N
+(    }) N
+() N
+() N
+(  ) N
+(  ) S
+(while) K
+( \(1\) {) p n
+() N
+(  hadSigInt = 0;) N
+(        ) S
+(/* prompt and get line */) c n
+(  ) p
+(if) K
+( \(interactive\){) p n
+() S 8 T (  ) S
+(char) k
+( *prompt = getenv\(") p
+(P1) str
+("\);) p n
+() S 8 T (  ) S
+(if) K
+( \(prompt == ) p
+(NULL) K
+(\){) p n
+() S 8 T (   ) S 16 T (fprintf \(errFile, ") S
+(%% ) str
+("\);) p n
+() S 8 T (   }) N
+() S 8 T (   ) S
+(else) K
+({) p n
+() S 8 T () S 16 T (   fprintf\(errFile,") S
+(%s) str
+(", prompt\);) p 56 T () N
+() S 8 T (   }) N
+(   }) N
+() S 8 T () S
+(if) K
+( \(fgets \(buffer, LINELEN, inFile\) != buffer\)) p n
+() S 8 T (  ) S
+(break) K
+(;) p n
+() N
+(        ) S
+(/* Get rid of \\n at end of buffer. */) c n
+() p 8 T (len = strlen\(buffer\);) N
+() S 8 T () S
+(if) K
+( \(buffer[len-1] == ') p
+(\\n) str
+('\)) p n
+() S 8 T (    buffer[len-1] = 0;) N
+() N
+() S 8 T () S
+(/* Run it ... */) c n
+() p 8 T (processline \(buffer,0,outputfd, 3\);) N
+() N
+(  }) N
+() N
+(    ) S
+(if) K
+( \(!feof\(inFile\)\)) p n
+(        perror \(") S
+(read) str
+("\);) p n
+(msh.c) (Page 2/5) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(msh.c) (11/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3-4) 12
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p n
+(    ) S
+(return) K
+( 0;) p 16 T () S 24 T () S
+(/* Also known as exit \(0\); */) c n
+(}) p n
+() N
+(int) k
+( processline \() p
+(char) k
+( *line, ) p
+(int) k
+( infd, ) p
+(int) k
+( outfd, ) p
+(int) k
+( flags\)) p n
+({) N
+() S 8 T () S
+(/*) c n
+() S 8 T (return values:) N
+() S 8 T (-1 error) N
+() S 8 T (0 no child to wait on) N
+() S 8 T (>0 pid of child) N
+() S 8 T (*/) N
+(    pid_t  cpid; ) p
+(//Child pid) c n
+(    ) p
+(int) k
+(    status; ) p
+(//argument for the wait\(\) function) c n
+(    ) p
+(int) k
+( bi; ) p
+(//Int to see if builtin command was run) c n
+() p 8 T () S
+(char) k
+( ** lineArgs; ) p
+(//array of arguments to the line) c n
+(    ) p
+(char) k
+( expanded[LINELEN];) p n
+() S 8 T (bzero\(expanded, LINELEN\);) N
+() S 8 T () S
+(char) k
+( *expandedPtr = expanded;) p n
+() S 8 T () N
+() S 8 T () S
+(int) k
+( cinfd = infd;) p n
+() S 8 T () S
+(int) k
+( coutfd = outfd;) p n
+() S 8 T () S
+(int) k
+( cerrfd = 2;) p n
+() S 8 T () N
+() S 8 T () N
+() S 8 T () S
+(//Clean up zombies) c n
+() p 8 T () S
+(while) K
+(\(wait3\(&status, WNOHANG, 0\) > 0\);) p n
+() S 8 T () N
+() S 8 T () N
+() S 8 T (removeComments\(line\);) N
+() S 8 T () N
+() S 8 T () N
+() S 8 T () S
+(if) K
+( \(flags&0x02\){) p n
+() S 8 T (    memset\(expanded, 0, LINELEN\); ) S
+(//Zero out expanded) c n
+() p 8 T (    ) S
+(int) k
+( expandCheck = expand\(line, expanded, LINELEN\);) p n
+() S 8 T (    ) S
+(if) K
+( \(expandCheck < 0\){) p n
+() S 8 T (      ) S
+(return) K
+( -1;) p n
+() S 8 T (    }) N
+() S 8 T (}) N
+() S 8 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T (memcpy\(expanded, line, strlen\(line\)\);) N
+() S 8 T (}) N
+() S 8 T () N
+() S 8 T () S
+(//Pipelines) c n
+() p 8 T () S
+(char) k
+( *pipeLoc;) p n
+() S 8 T () S
+(int) k
+( pipefd[2];) p n
+() S 8 T () S
+(int) k
+( tempRead = infd;) p n
+() S 8 T () S
+(int) k
+( pipeFlag = 0;) p n
+() S 8 T () N
+() S 8 T () S
+(while) K
+( \(\(pipeLoc=findPipeChar\(expandedPtr\)\) != ) p
+(NULL) K
+(\){) p n
+() S 8 T () S 16 T (pipeFlag = 1;) N
+() S 8 T () S 16 T (*pipeLoc = ') S
+(\\0) str
+(';) p n
+() S 8 T () S 16 T () S
+(if) K
+( \(pipe\(pipefd\) < 0\){) p n
+() S 8 T () S 16 T () S 24 T (dprintf\(cerrfd, ") S
+(Pipe error: %s\\n) str
+(", strerror\(errno\)\);) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T (cpid = processline\(expandedPtr, tempRead, pipefd[1], 0\);) N
+() S 8 T () S 16 T () S
+(if) K
+( \(tempRead != infd\){) p n
+() S 8 T () S 16 T () S 24 T (close\(tempRead\);) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T (tempRead = pipefd[0];) N
+() S 8 T () S 16 T (close\(pipefd[1]\);) N
+() S 8 T () S 16 T (expandedPtr = ++pipeLoc;) N
+() S 8 T () S 16 T () N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(pipeFlag\){) p n
+() S 8 T () S 16 T (cpid = processline\(expandedPtr, tempRead, outfd, 1\);) N
+() S 8 T () S 16 T (close\(tempRead\);) N
+() S 8 T () S 16 T () S
+(return) K
+( cpid;) p n
+() S 8 T (}) N
+(msh.c) (Page 3/5) (Jun 05, 14 23:59) title
+border
+/v 1 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () N
+() S 8 T () N
+() S 8 T () S
+(//Redirection) c n
+() p 8 T () N
+() S 8 T () S
+(if) K
+( \(findRedirections\(expandedPtr, &cinfd, &coutfd, &cerrfd\) < 0\){) p n
+() S 8 T () S 16 T () S
+(return) K
+( -1;) p n
+() S 8 T (}) N
+() S 8 T () N
+() S 8 T () N
+(    ) S
+(int) k
+( numArgs = arg_parse\(expandedPtr, &lineArgs\);) p n
+(    ) S
+(if) K
+( \(numArgs < 0\){) p n
+(      ) S
+(return) K
+( -1;) p n
+(    }) N
+(    ) S
+(else) K
+( ) p
+(if) K
+(\(numArgs == 0\){ ) p
+(//If there are zero arguments, don't process the line) c n
+(      free\(lineArgs\);) p n
+(      ) S
+(return) K
+( 0;) p n
+(    }) N
+() N
+() N
+(    bi = runBuiltin\(numArgs, lineArgs, coutfd, cinfd, cerrfd\);) N
+(    ) S
+(if) K
+( \(bi\){ ) p
+(//Command was a builtin command) c n
+(      free\(lineArgs\);) p n
+(      ) S
+(return) K
+( 0;) p n
+(    }) N
+() N
+(    ) S
+(/* Start a new process to do the job. */) c n
+(    cpid = fork\(\);) p n
+(    ) S
+(if) K
+( \(cpid < 0\) {) p n
+(      perror \(") S
+(fork) str
+("\);) p n
+() S 8 T (    free\(lineArgs\);) N
+(      ) S
+(return) K
+( -1;) p n
+(    }) N
+() N
+(    ) S
+(/* Check for who we are! */) c n
+(    ) p
+(if) K
+( \(cpid == 0\) {) p n
+(      ) S
+(/* We are the child! */) c n
+() p 8 T () S 16 T () N
+() S 8 T (  ) N
+() S 8 T () S 16 T () S
+(/* add dup2*/) c n
+() p 8 T (  ) S
+(if) K
+( \(cinfd != 0\){) p n
+() S 8 T () N
+() S 8 T () S 16 T (dup2\(cinfd, 0\);) N
+() S 8 T (  } ) N
+() S 8 T (  ) S
+(if) K
+(\(coutfd != 1\){) p n
+() N
+() S 8 T (  ) S 16 T (dup2\(coutfd,1\);) N
+() S 8 T (  }) N
+() S 8 T (  ) S
+(if) K
+( \(cerrfd != 2\){) p n
+() N
+() S 8 T () S 16 T (  dup2\(cerrfd, 2\);) N
+() S 8 T (  }) N
+() S 8 T ( ) N
+(      execvp\(lineArgs[0], lineArgs\);) N
+(      perror \(") S
+(exec) str
+("\);) p n
+() S 8 T (  free\(lineArgs\);) N
+(      exit \(127\);) N
+(    }) N
+(    ) S
+(else) K
+({) p n
+(    ) S 8 T (free\(lineArgs\);) N
+() S 8 T () S 16 T () S
+(if) K
+( \(cinfd != infd\){) p n
+() S 8 T () S 16 T () S 24 T (close\(cinfd\);) N
+() S 8 T () S 16 T (}) N
+(    }) N
+() S 8 T () S
+(if) K
+( \(flags&0x01\){) p n
+() S 8 T (    ) S
+(/* Have the parent wait for child to complete */) c n
+() p 8 T () S 16 T (waitingCPID = cpid;) N
+() S 8 T (    ) S
+(if) K
+( \(waitpid\(cpid, &status, 0\) < 0\)) p n
+() S 8 T (      perror \(") S
+(wait) str
+("\);) p n
+() S 8 T () S 16 T (waitingCPID = 0;) N
+(msh.c) (Page 4/5) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(msh.c) (12/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (5) 13
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S 16 T () S
+(if) K
+( \(WIFEXITED\(status\)\){) p n
+() S 8 T () S 16 T () S 24 T (lastExit = WEXITSTATUS\(status\);) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T (lastExit = 127;) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(return) K
+( 0;) p n
+() S 8 T (}) S 16 T () N
+() S 8 T () S
+(return) K
+( cpid;) p n
+(}) N
+(msh.c) (Page 5/5) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(msh.c) (13/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1-2) 14
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(#include) K
+( <string.h>) p n
+(#include) K
+( <sys/types.h>) p n
+(#include) K
+( <sys/stat.h>) p n
+(#include) K
+( <stdlib.h>) p n
+(#include) K
+( <unistd.h>) p n
+(#include) K
+( ") p
+(proto.h) str
+(") p n
+(#include) K
+( ") p
+(fcntl.h) str
+(") p n
+() N
+(#define) K
+( FMODE 0666) p n
+() N
+(typedef) K
+( ) p
+(enum) k
+({R_STDIN, R_OUT, R_OUTAPP, R_ERR, R_ERRAPP} redirect_t;) p n
+() N
+(char) k
+(* findRedirectChar\() p
+(char) k
+(* line\){) p n
+() S 8 T () S
+(int) k
+( inQuote = 0;) p n
+() S 8 T () S
+(int) k
+( i;) p n
+() S 8 T () S
+(int) k
+( lineLen = strlen\(line\);) p n
+() S 8 T () S
+(char) k
+( c;) p n
+() S 8 T () S
+(for) K
+( \(i = 0; i < lineLen; i++\){) p n
+() S 8 T () S 16 T (c = line[i];) N
+() S 8 T () S 16 T () S
+(if) K
+(\(c== ') p
+(") str
+('\){) p n
+() S 8 T () S 16 T () S 24 T (inQuote = !inQuote;) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+(\(!inQuote && \(c ==') p
+(<) str
+(' || c == ') p
+(>) str
+('\)\){) p n
+() S 8 T () S 16 T () S 24 T () S
+(return) K
+( &line[i];) p n
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(return) K
+( ) p
+(NULL) K
+(;) p n
+(}) N
+() N
+() N
+() N
+() N
+() N
+(int) k
+( findRedirections\() p
+(char) k
+( *line, ) p
+(int) k
+( *infd, ) p
+(int) k
+( *outfd, ) p
+(int) k
+( *errfd\){) p n
+() S 8 T () S
+(/*) c n
+() S 8 T (Name: findRedirections) N
+() S 8 T (Input:) N
+() S 8 T () S 16 T (line: The working line) N
+() S 8 T () S 16 T (infd: pointer to an input file descriptor) N
+() S 8 T () S 16 T (outfd: pointer to an output file descriptor) N
+() S 8 T () S 16 T (errfd: pointer to an error file descriptor) N
+() S 8 T (Output:) N
+() S 8 T () S 16 T (0 if successful, -1 if error with message printed) N
+() S 8 T (Purpose:) N
+() S 8 T () S 16 T (To parse a string for redirection operators and deal with file I) N
+(O) N
+() S 8 T (*/) N
+() p 8 T () N
+() S 8 T () S
+(char) k
+( *redirectStart = line; ) p
+(//First '<' or '>' in the redirect \(changed ) c n
+(by findRedirectChar\(\)\)) N
+() p 8 T () S
+(char) k
+( fileBuf[256]; ) p
+(//buffer to hold the name of the line) c n
+() p 8 T () S
+(int) k
+( bufLen;) p n
+() S 8 T () N
+() S 8 T (redirect_t redirType;) N
+() S 8 T () N
+() S 8 T () N
+() S 8 T () S
+(while) K
+( \(\(redirectStart = findRedirectChar\(redirectStart\)\) != ) p
+(NULL) K
+(\){ ) p
+(//Whi) c n
+(le there are redirect characters) N
+() p 8 T () S 16 T () N
+() S 8 T () S 16 T () N
+() S 8 T () S 16 T () S
+(//Find out what kind of redirect) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(*redirectStart == ') p
+(>) str
+('\){  ) p
+(//stderr or stdout) c n
+() p 8 T () S 16 T () S 24 T () S
+(if) K
+( \(*\(redirectStart+1\) != ') p
+(\\0) str
+(' && *\(redirectStart+1\) == ) p n
+(') S
+(>) str
+('\){ ) p
+(//Append) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(redirectStart-line >= 1 && *\(redirectStart -) p n
+(1\) == ') S
+(2) str
+(' && ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T ( \(redirectStart-line == 2 || \(redirectSt) N
+(art-line > 2 && *\(redirectStart - 2\) == ') S
+( ) str
+('\)\)\){ ) p
+(//Append stderr) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T ( redirType = R_ERRAPP; ) S
+(// 2>>) c n
+(redirect.c) (Page 1/3) (Jun 05, 14 22:52) title
+border
+/v 1 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T ( *\(redirectStart - 1\) = ') S
+( ) str
+('; ) p
+(//Set 2 to ) c n
+(space) N
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T () N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(else) K
+( ) p
+(if) K
+(\(redirectStart-line >= 1 && *\(redirectSta) p n
+(rt -1\) !=') S
+(2) str
+('\){ ) p
+(//Append stdout) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T (redirType = R_OUTAPP; ) S
+(// >>) c n
+() p 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T (*\(redirectStart+1\) = ') S
+( ) str
+('; ) p
+(// Set second bracket ) c n
+(to space) N
+() p 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+({ ) p
+(//No append) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(redirectStart-line >= 1 && *\(redirectStart -) p n
+(1\) == ') S
+(2) str
+(' && ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (\(redirectStart-line == 2 || \(redirectSta) N
+(rt-line > 2 && *\(redirectStart - 2\) == ') S
+( ) str
+('\)\)\) ) p
+(//Create stderr) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T ({) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T (redirType = R_ERR; ) S
+(// 2>) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T (*\(redirectStart - 1\) = ') S
+( ) str
+('; ) p
+(// S) c n
+(et 2 to space) N
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(else) K
+( ) p
+(if) K
+(\(redirectStart-line >= 1 && *\(redirectSta) p n
+(rt -1\)!=') S
+(2) str
+('\){ ) p
+(//Create stdout) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T (redirType = R_OUT; ) S
+(// >) c n
+() p 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+(\(*redirectStart == ') p
+(<) str
+('\){) p
+(//stdin) c n
+() p 8 T () S 16 T () S 24 T (redirType = R_STDIN; ) S
+(// <) c n
+() p 8 T () S 16 T (}) N
+() S 8 T () S 16 T (*redirectStart = ') S
+( ) str
+(';) p
+(//Set original redirect bracket to space) c n
+() p 8 T () S 16 T () S
+(for) K
+( \(;*redirectStart == ') p
+( ) str
+('; redirectStart++\); ) p
+(//Skip spaces) c n
+() p 8 T () S 16 T (bufLen = 0;) N
+() S 8 T () S 16 T () S
+(for) K
+( \(;*redirectStart != ') p
+( ) str
+(' && *redirectStart != ') p
+(\\0) str
+(' && *redirec) p n
+(tStart != ') S
+(<) str
+(' && *redirectStart != ') p
+(>) str
+(' && bufLen < 256; redirectStart++\){ ) p
+(//Copy) c n
+( file name) N
+() p 8 T () S 16 T () S 24 T (strncpy\(&fileBuf[bufLen++], redirectStart, 1\);) N
+() S 8 T () S 16 T () S 24 T (*redirectStart = ') S
+( ) str
+('; ) p
+(//Change the file name to spaces) c n
+() p 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(if) K
+( \(bufLen == 256\){ ) p
+(//File name too long for UNIX machine) c n
+() p 8 T () S 16 T () S 24 T (dprintf\(*errfd, ") S
+(File name too long\\n) str
+("\);) p n
+() S 8 T () S 16 T () S 24 T () S
+(return) K
+( -1;) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T (fileBuf[bufLen] = ') S
+(\\0) str
+('; ) p
+(//Add null-terminator) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(bufLen == 0\){) p
+(//No filename) c n
+() p 8 T () S 16 T () S 24 T (dprintf\(*errfd, ") S
+(No filename given for redirect operator\\n) str
+("\);) p n
+() S 8 T () S 16 T () S 24 T () S
+(return) K
+( -1;) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () N
+() S 8 T () S 16 T () S
+(switch) K
+( \(redirType\){) p n
+() S 8 T () S 16 T () S 24 T () S
+(case) K
+( R_STDIN:) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (*infd = open\(fileBuf, O_RDONLY\);) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S 24 T () N
+() S 8 T () S 16 T () S 24 T () S
+(case) K
+( R_OUT:) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (*outfd = open\(fileBuf, O_WRONLY|O_CREAT|O_TRUNC,) N
+( FMODE\);) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S 24 T () N
+() S 8 T () S 16 T () S 24 T () S
+(case) K
+( R_OUTAPP:) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (*outfd = open\(fileBuf, O_WRONLY|O_CREAT|O_APPEND) N
+(, FMODE\);) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S 24 T () N
+() S 8 T () S 16 T () S 24 T () S
+(case) K
+( R_ERR:) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (*errfd = open\(fileBuf, O_WRONLY|O_CREAT|O_TRUNC,) N
+( FMODE\);) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () N
+(redirect.c) (Page 2/3) (Jun 05, 14 22:52) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(redirect.c) (14/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3) 15
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S 16 T () S 24 T () S
+(case) K
+( R_ERRAPP:) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (*errfd = open\(fileBuf, O_WRONLY|O_CREAT|O_APPEND) N
+(, FMODE\);) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(return) K
+( 0;) p n
+(}) N
+() N
+() N
+() N
+(redirect.c) (Page 3/3) (Jun 05, 14 22:52) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(redirect.c) (15/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1) 16
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(/* CS 352 -- Function prototypes) c n
+( * $Id: proto.h,v 1.13 2014/06/06 05:44:43 evansz2 Exp $) N
+( *  Zach Evans) N
+( *  CSCI 352) N
+( *  Spring 2014) N
+( */) N
+(#include) K
+( <stdio.h>) p n
+(#define) K
+( LINELEN 200000) p n
+() N
+(int) k
+( arg_parse\() p
+(char) k
+( *line, ) p
+(char) k
+( ***argvp\);) p n
+(int) k
+( runBuiltin\() p
+(int) k
+( argc, ) p
+(char) k
+( **argv, ) p
+(int) k
+( outfd, ) p
+(int) k
+( infd, ) p
+(int) k
+( errfd\);) p n
+(int) k
+( expand \() p
+(char) k
+( *orig, ) p
+(char) k
+( *new, ) p
+(int) k
+( newsize\);) p n
+(int) k
+( processline \() p
+(char) k
+( *line, ) p
+(int) k
+( infd, ) p
+(int) k
+( outfd, ) p
+(int) k
+( flags\);) p n
+(int) k
+( findRedirections\() p
+(char) k
+( *line, ) p
+(int) k
+( *infd, ) p
+(int) k
+( *outfd, ) p
+(int) k
+( *errfd\);) p n
+() N
+() N
+() N
+(extern) K
+( ) p
+(int) k
+( mainargc;) p n
+(extern) K
+( ) p
+(char) k
+( **mainargv;) p n
+(extern) K
+( ) p
+(int) k
+( shiftIndex;) p n
+(extern) K
+( ) p
+(int) k
+( lastExit;) p n
+(extern) K
+( ) p
+(int) k
+( interactive;) p n
+(extern) K
+( ) p
+(int) k
+( hadSigInt;) p n
+(extern) K
+( ) p
+(int) k
+( waitingCPID;) p
+(proto.h) (Page 1/1) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(proto.h) (16/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1) 17
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+( ) p
+(#    $Id: Makefile,v 1.4 2014/05/30 07:53:50 evansz2 Exp $) c n
+() p n
+(CC) l
+( = gcc) p n
+(CFLAGS) l
+( = -g -Wall) p n
+(SOURCES) l
+( = arg_parse.c builtin.c msh.c expand.c redirect.c) p n
+(OBJECTS) l
+( = $\(SOURCES:.c=.o\)) p n
+() N
+(all) L
+(: msh) p n
+() N
+() N
+(msh) L
+(: $\(OBJECTS\)) p n
+() S 8 T ($\(CC\) $\(CFLAGS\) -o msh $\(OBJECTS\)) N
+() N
+($\(OBJECTS\)) L
+(:$\(SOURCES\)) p n
+() S 8 T (@echo Making Object ) N
+() S 8 T ($\(CC\) -c -g -Wall $\(SOURCES\)) N
+() N
+(clean) L
+(:) p n
+() S 8 T (rm *.o msh) N
+() S 8 T (@echo Clean ) S
+(done) K n
+() p n
+($\(SOURCES\)) L
+(: proto.h) p n
+(Makefile) (Page 1/1) (Jun 05, 14 23:59) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(Makefile) (17/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1) 18
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(echo Redirecting error to ERRFILE) p n
+(cd notadir 2> ERRFILE) N
+(echo Printing ERRFILE) N
+(cat ERRFILE) N
+(echo Adding more errors) N
+(ls notafile 2>>ERRFILE) N
+(echo Printing ERRFILE) N
+(cat ERRFILE) N
+(echo Redirecting output) N
+(ls -al > lsFile) N
+(echo Printing lsFile) N
+(cat lsFile) N
+() N
+(echo Testing pipelines) N
+(echo $\(ps aux | grep dh | grep -v grep | cut -c1-5\)) N
+(testScript) (Page 1/1) (Jun 06, 14 8:23) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(testScript) (18/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1-2) 19
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(Script started on Fri 06 Jun 2014 08:25:08 AM PDT) p n
+(evansz2@linux-06:~/cs352s14/dev/msh$ cd /home/phil/public/cs352/testa6) N
+(evansz2@linux-06:/home/phil/public/cs352/testa6$ ./try) N
+(making ...) N
+(Running tests...) N
+(Setting limit of open files to 30) N
+(Simple Tests) N
+(Simple Redirections!) N
+(Simple Pipes!) N
+() N
+(PASS Simple Tests!) N
+() N
+(Full Tests ...) N
+(Testing redirections!) N
+(Testing pipes!) N
+(Other tests!) N
+(Testing Statements!) N
+(Making REF) N
+(Big script output differs) N
+(View Diffs? y) N
+(--- REF) S 8 T (2014-06-06 08:24:56.957540506 -0700) N
+(+++ MSH.OUT) S 16 T (2014-06-06 08:24:56.952540768 -0700) N
+(@@ -24,17 +24,12 @@) N
+( ----stdout----) N
+( file evansz2 students -rw-r--r-- 1 0 Sun May  1 00:00:00 2005) N
+( ----end of stdout----) N
+(-5 stderr) N
+(+Usage: envset NAME value) N
+(+Usage: envunset NAME) N
+(+Shift index too high) N
+(+Shift index too high) N
+(+1 stderr) N
+( testing fd leakage in redirection) N
+(----- f2 ---- \(should say Pass\\nPass\\n\)) N
+(-Pass) N
+(-Pass) N
+(----- end of f2 ----) N
+(-1 f1) N
+(-1 f2) N
+(-1 f3) N
+(-1 f5) N
+(-1 f6) N
+( Testing pipes!) N
+( 10 Pipes...) N
+( pass) N
+(@@ -61,51 +56,4 @@) N
+( 8) N
+( Pass!) N
+( Testing Statements!) N
+(-Ifs most likely implemented! More tests!) N
+(-pass if true) N
+(-pass if false) N
+(-pass if echo Yes | false) N
+(-Testing nested Ifs) N
+(-Pass) N
+(-Pass) N
+(-Pass) N
+(-Pass) N
+(-Testing while ...) N
+(-Looping .... N is 10.) N
+(-Looping .... N is 9.) N
+(-Looping .... N is 8.) N
+(-Looping .... N is 7.) N
+(-Looping .... N is 6.) N
+(-Looping .... N is 5.) N
+(-Looping .... N is 4.) N
+(-Looping .... N is 3.) N
+(-Looping .... N is 2.) N
+(-Looping .... N is 1.) N
+(ASSG6) (Page 1/3) (Jun 06, 14 8:25) title
+border
+/v 1 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(-Testing if in while ...) p n
+(-Looping .... N is 10.) N
+(-Looping .... N is 9.) N
+(-Looping .... N is 8.) N
+(^[[7m--More--\(54%\)^[[27m) N
+(-Looping .... N is 7.) N
+(^[[7m--More--\(55%\)^[[27m) N
+(-Looping .... N is 6.) N
+(^[[7m--More--\(56%\)^[[27m) N
+(-Looping .... N is 5.) N
+(^[[7m--More--\(58%\)^[[27m) N
+(-N is equal to 5!) N
+(^[[7m--More--\(59%\)^[[27m) N
+(-Looping .... N is 4.) N
+(^[[7m--More--\(60%\)^[[27m) N
+(-Looping .... N is 3.) N
+(^[[7m--More--\(61%\)^[[27m) N
+(-Looping .... N is 2.) N
+(^[[7m--More--\(62%\)^[[27m) N
+(-Looping .... N is 1.) N
+(^[[7m--More--\(63%\)^[[27m) N
+(-Testing while in a while) N
+(^[[7m--More--\(65%\)^[[27m) N
+(-i*j|   1   2   3   4   5   6   7   8   9  10) N
+(^[[7m--More--\(67%\)^[[27m) N
+(---------------------------------------------) N
+(^[[7m--More--\(70%\)^[[27m) N
+(-  1|   1   2   3   4   5   6   7   8   9  10) N
+(^[[7m--More--\(72%\)^[[27m) N
+(-  2|   2   4   6   8  10  12  14  16  18  20) N
+(^[[7m--More--\(75%\)^[[27m) N
+(-  3|   3   6   9  12  15  18  21  24  27  30) N
+(^[[7m--More--\(77%\)^[[27m) N
+(-  4|   4   8  12  16  20  24  28  32  36  40) N
+(^[[7m--More--\(79%\)^[[27m) N
+(-  5|   5  10  15  20  25  30  35  40  45  50) N
+(^[[7m--More--\(82%\)^[[27m) N
+(-  6|   6  12  18  24  30  36  42  48  54  60) N
+(^[[7m--More--\(84%\)^[[27m) N
+(-  7|   7  14  21  28  35  42  49  56  63  70) N
+(^[[7m--More--\(87%\)^[[27m) N
+(-  8|   8  16  24  32  40  48  56  64  72  80) N
+(^[[7m--More--\(89%\)^[[27m) N
+(-  9|   9  18  27  36  45  54  63  72  81  90) N
+(^[[7m--More--\(92%\)^[[27m) N
+(- 10|  10  20  30  40  50  60  70  80  90 100) N
+(^[[7m--More--\(94%\)^[[27m) N
+(-Testing P2^[[K) N
+(^[[7m--More--\(95%\)^[[27m) N
+(-% % &&&&&&true true) N
+(^[[7m--More--\(96%\)^[[27m) N
+(-% ^[[K) N
+(^[[7m--More--\(96%\)^[[27m) N
+(\\ No newline at end of file) N
+(^[[7m--More--\(98%\)^[[27m) N
+(+Ifs most likely not implemented!) N
+(------------------------) N
+(Fun and games .... ) N
+(exec: No such file or directory) N
+(sorry, no fun and games) N
+(_____________________) N
+() N
+(Tests done!) N
+(View INFO? ) N
+(evansz2@linux-06:/home/phil/public/cs352/testa6$ ) N
+(evansz2@linux-06:/home/phil/public/cs352/testa6$ ) N
+(evansz2@linux-06:/home/phil/public/cs352/testa6$ cd) N
+(evansz2@linux-06:~$ cd cs352s14/) N
+(evansz2@linux-06:~/cs352s14$ cd dev) N
+(ASSG6) (Page 2/3) (Jun 06, 14 8:25) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(ASSG6) (19/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3) 20
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.147420 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(evansz2@linux-06:~/cs352s14/dev$ cd msh) p n
+(evansz2@linux-06:~/cs352s14/dev/msh$ make) N
+(make: Nothing to be done for `all'.) N
+(evansz2@linux-06:~/cs352s14/dev/msh$ make clean) N
+(rm *.o msh) N
+(Clean done) N
+(evansz2@linux-06:~/cs352s14/dev/msh$ make) N
+(Making Object) N
+(gcc -c -g -Wall arg_parse.c builtin.c msh.c expand.c redirect.c) N
+(gcc -g -Wall -o msh arg_parse.o builtin.o msh.o expand.o redirect.o) N
+(evansz2@linux-06:~/cs352s14/dev/msh$ ./msh testScript) N
+(Redirecting error to ERRFILE) N
+(Printing ERRFILE) N
+(No such file or directory) N
+(Adding more errors) N
+(Printing ERRFILE) N
+(No such file or directory) N
+(ls: cannot access notafile: No such file or directory) N
+(Redirecting output) N
+(Printing lsFile) N
+(total 205) N
+(drwxr-xr-x 3 evansz2 students    20 Jun  6 08:25 .) N
+(drwxr-xr-x 5 evansz2 students     5 Jun  6 08:12 ..) N
+(-rw-r--r-- 1 evansz2 students  3288 Apr 21 19:08 arg_parse.c) N
+(-rw-r--r-- 1 evansz2 students  4736 Jun  6 08:25 arg_parse.o) N
+(-rw-r--r-- 1 evansz2 students     0 Jun  6 08:24 ASSG6) N
+(-rw-r--r-- 1 evansz2 students  7036 Jun  5 23:59 builtin.c) N
+(-rw-r--r-- 1 evansz2 students 19040 Jun  6 08:25 builtin.o) N
+(drwxr-xr-x 2 evansz2 students     5 Jun  5 23:59 CVS) N
+(-rw-r--r-- 1 evansz2 students    80 Jun  6 08:25 ERRFILE) N
+(-rw-r--r-- 1 evansz2 students 14012 Jun  5 23:59 expand.c) N
+(-rw-r--r-- 1 evansz2 students 22840 Jun  6 08:25 expand.o) N
+(-rw-r--r-- 1 evansz2 students     0 Jun  6 08:25 lsFile) N
+(-rw-r--r-- 1 evansz2 students   370 Jun  5 23:59 Makefile) N
+(-rwxr-xr-x 1 evansz2 students 48574 Jun  6 08:25 msh) N
+(-rw-r--r-- 1 evansz2 students  5112 Jun  5 23:59 msh.c) N
+(-rw-r--r-- 1 evansz2 students 14920 Jun  6 08:25 msh.o) N
+(-rw-r--r-- 1 evansz2 students   635 Jun  5 23:59 proto.h) N
+(-rw-r--r-- 1 evansz2 students  3528 Jun  5 22:52 redirect.c) N
+(-rw-r--r-- 1 evansz2 students  6696 Jun  6 08:25 redirect.o) N
+(-rw-r--r-- 1 evansz2 students   319 Jun  6 08:23 testScript) N
+(Testing pipelines) N
+(root) N
+(evansz2@linux-06:~/cs352s14/dev/msh$ exit) N
+(exit) N
+() N
+(Script done on Fri 06 Jun 2014 08:26:34 AM PDT) N
+(ASSG6) (Page 3/3) (Jun 06, 14 8:25) title
+border
+grestore
+(Printed by Zachary Quinn Evans) rhead
+(ASSG6) (20/20) (Friday June 06, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+
+%%Trailer
+end
+%%EOF

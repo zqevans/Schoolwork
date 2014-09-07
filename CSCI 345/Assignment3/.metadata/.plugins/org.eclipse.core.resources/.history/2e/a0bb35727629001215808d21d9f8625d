@@ -1,0 +1,19 @@
+package cs345evansz2;
+
+public class Room {
+	
+	public String roomName;
+	public String roomDescription;
+	
+	Room(String inName, String inDesc){
+		roomName = inName;
+		roomDescription = inDesc;
+	}
+	
+	public static Room makeRoom(String inName, String inDesc){
+		
+		return new Room(inName, inDesc);
+		
+	}
+
+}

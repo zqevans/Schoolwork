@@ -1,0 +1,37 @@
+package cs345evansz2;
+
+
+import cs345evansz2.GameGlobals.*;
+
+public class Path {
+	
+	public String pathName;
+	public VocabItem pathVocab;
+	public Room sourceRoom, destRoom;
+	
+	
+
+	Path(String inName, VocabItem inVocab, Room inSource, Room inDest){
+		pathName = inName;
+		pathVocab = inVocab;
+		sourceRoom = inSource;
+		destRoom = inDest;
+		
+		
+	}
+	
+	public static Path makePath(String inName, VocabItem inVocab, Room inSource, Room inDest){
+		
+		Path tempPath = new Path(inName, inVocab, inSource, inDest);
+		
+		inSource.validPaths.add(tempPath);
+		GameGlobals.allPaths.add(tempPath);
+		
+		
+		return tempPath;
+	}
+
+	
+	
+	
+}

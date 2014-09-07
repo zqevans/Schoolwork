@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move 3 elements to &apos;BattleshipServer/src/battleship&apos;&#x0A;- Original project: &apos;BattleshipServer&apos;&#x0A;- Destination element: &apos;BattleshipServer/src/battleship&apos;&#x0A;- Original elements:&#x0A;     Ship.java&#x0A;     ServerMain.java&#x0A;     Player.java&#x0A;- Update references to refactored element" description="Move compilation units" destination="/src&lt;battleship" element1="/src&lt;{Ship.java" element2="/src&lt;{ServerMain.java" element3="/src&lt;{Player.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.move" policy="org.eclipse.jdt.ui.moveResources" qualified="false" references="true" stamp="1400533189141" units="3" version="1.0"/>
+</session>

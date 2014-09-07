@@ -1,0 +1,43 @@
+/*
+* Zach Evans
+* CSCI 442
+* Prof. Granier
+* Assignment 3
+*/
+import javax.swing.*;
+import java.awt.Graphics;
+
+public class GaltonBoard extends JFrame {
+
+	public GaltonBoard(){
+		add(new NewPanel());
+	}
+	
+	public static void main(String[] args) {
+		GaltonBoard frame = new GaltonBoard();
+		frame.setSize(800,600);
+		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		
+		
+	}
+
+}
+class NewPanel extends JPanel { 
+	  @Override
+	  
+	  protected void addLine(int x1, int x2, int y1, int y2){
+		  
+	  }
+	  
+	  protected void paintComponent(Graphics g) {
+	    super.paintComponent(g);
+	    int panelHeight = this.getHeight();
+	    int panelWidth = this.getWidth();
+	    int dotWidth = 10;
+	    g.fillOval(panelWidth/2-dotWidth/2,panelHeight/4-dotWidth/2,dotWidth, dotWidth);
+	    g.drawRect(0, 0, panelWidth, panelHeight);
+	    
+	  }
+	}

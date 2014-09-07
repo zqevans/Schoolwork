@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!--
+Zach Evans
+CSCI 202
+CRN 20467
+-->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Zach Evans Lab 7</title>
+</head>
+
+<body>
+
+<form name="form_quote" action="">
+<input type="textbox"size="50" name="quote" size="200"/>
+</form>
+
+<script type="text/javascript">
+var quoteArray = new Array();
+
+quoteArray[0] = "The only thing we have to fear is fear itself...and bears.";
+quoteArray[1] = "Declare variables, not war.";
+quoteArray[2] = "Famous last words: Hey, watch this.";
+quoteArray[3] = "Science rules";
+quoteArray[4] = "I drank what? -Socrates";
+quoteArray[5] = "You can't be sad while playing a banjo. -Steve Martin";
+
+function changeQuote(){
+	var quoteIndex = Math.floor(Math.random()*6);
+	var newQuote = quoteArray[quoteIndex];
+	document.form_quote.quote.value = newQuote;
+}
+
+var change = setInterval("changeQuote()", 2000);
+
+</script>
+
+</body>
+</html>

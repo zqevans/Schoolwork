@@ -1,0 +1,9 @@
+package cs345evansz2;
+
+import cs345evansz2.MatchType.*;
+
+public class Word {
+
+	public static Word makeWord (string matchWord, MatchType matchType) 
+
+}

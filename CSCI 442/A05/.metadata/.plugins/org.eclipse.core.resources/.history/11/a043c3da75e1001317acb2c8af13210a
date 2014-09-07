@@ -1,0 +1,32 @@
+
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+
+import java.io.*;
+import java.util.*;
+
+public class ClassConflicts {
+	private static SAXBuilder builder = new SAXBuilder();
+	private static File coursesFile = new File("WWU_courses.xml");
+	public static void main(String[] args) {
+		try {
+			Document courseDOM = (Document)builder.build(coursesFile);
+			Element rootNode = courseDOM.getRootElement();
+			List<Element> courses = rootNode.getChildren("course");
+			for (Element course: courses){
+				System.out.println(course.getAttributeValue("num"));
+			}
+			
+			
+			
+		} catch (JDOMException e) {
+			System.out.println(e.getMessage());
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+
+	}
+
+}

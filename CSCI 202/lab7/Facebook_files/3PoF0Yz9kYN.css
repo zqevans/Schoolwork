@@ -1,0 +1,62 @@
+/*1369015571,178142497*/
+
+.appsFeedSubHeader{padding-left:23px}
+div#contentCol.appFeedFilter div#rightCol{padding-top:0}
+div#contentCol.appFeedFilter div#contentArea div#pagelet_home_stream{border-top:1px solid #ccc}
+._50zb{border-bottom:1px solid #e6e6e6;border-top:1px solid #ccc;margin-left:-18px;padding-left:18px}
+html ._50zc{margin-bottom:10px;margin-top:5px}
+.friendListHeader{height:41px;padding-top:4px}
+.friendListHeader .editForm, .friendListHeaderEditMode .staticName, .friendListHeaderEditMode .friendListSubHeader, .friendListManage .updateType, .updateTypesExpanded .chooseUpdateTypes{display:none}
+.friendListHeaderEditMode .editForm, .updateTypesExpanded .updateType{display:block}
+.friendListHeader .friendListName .nameInput{font-size:13px;width:140px}
+.friendListSubHeader{padding-left:23px}
+.friendListHeader .timelineUnitContainer .uiSelector{padding-left:5px;margin-left:-12px;margin-top:-3px}
+.friendListHeader .fbAudienceHover{margin-left:-1px}
+div#contentCol.friendListFilter{padding-top:15px !important}
+div#contentCol.friendListFilter div#rightCol{padding-top:0}
+.friendListFilterNullState{padding-top:40px;text-align:center}
+.friendListRestrictedNullState{border-top:1px solid #ccc;font-size:12px;padding-top:40px;text-align:justify}
+.notificationSelector .uiSelectorButton .img{margin-top:2px;margin-left:2px}
+.friendListTypeaheadBox .plusIcon{position:absolute;top:7px;left:11px}
+.friendListTypeaheadBox .friendListAddTypeahead{background-color:transparent}
+.friendListAddTypeahead .textInput{padding-left:15px}
+.friendListAddTypeahead .noPadding{padding-left:0}
+.friendListAddTypeahead{margin-right:8px}
+.friendListTypeaheadBox{position:relative}
+.home #rightCol .friend_list_new_feed_header{height:34px;margin-bottom:5px;padding-top:5px;padding-right:20px}
+.smartListTip{cursor:default;font-weight:normal}
+.empty .fbFriendListMemberBoxFacepile,
+.fbFriendListNoMembersMessage{display:none}
+.empty .fbFriendListNoMembersMessage{display:block}
+._4ng{outline:0;position:relative}
+._4o9{border:1px solid rgba(0, 0, 0, .2)}
+._4nh{bottom:40px;position:absolute;width:100%}
+._4ni{position:relative;text-align:center}
+._4nj{bottom:0;left:0;position:absolute;right:0;top:0}
+._4n8{border:1px solid rgba(0, 0, 0, .45);border-bottom-color:#666;box-shadow:0 3px 3px rgba(0, 0, 0, .1);margin:0 auto;position:relative;text-align:left;zoom:1}
+._4s-, ._4nb{max-width:340px}
+._4s_{display:inline-block}
+._4n9{bottom:-17px;height:17px;left:50%;margin-left:-7px;position:absolute}
+._4na ._4n9{bottom:-7px;height:9px;margin-left:-8px}
+._4nb{top:-7px;min-width:250px}
+._4t0{height:81px;overflow:hidden}
+._54c{float:left;height:81px;margin-left:3px;width:81px}
+._54c:first-child{margin:0}
+._4n7{background-position:50% 50%;background-repeat:no-repeat;height:81px;width:81px}
+._54d{left:5px;top:5px}
+._4t1{background:#eaeaea;height:7px;overflow:hidden;text-align:center;width:100%}
+._4t2{background:#fff;padding:0 3px;position:relative;text-transform:uppercase;top:-4px;white-space:nowrap}
+._4np{overflow:hidden}
+._4sy ._4np{max-height:2.66em}
+._4sz ._4np{max-height:3.99em}
+._56xs{border:1px solid #e5e5e5;width:415px}
+._56xt{border:1px solid #e5e5e5;width:415px}
+._6xi{width:196px}
+._6xj{width:129px}
+._56xs .ogContentSubdescription, ._56xt .ogContentSubdescription{border-top:1px solid #e5e5e5;margin-top:10px;padding-top:5px}
+.fbProfileShareSummarySection .fbProfileBylineFragment{color:#333;display:block;padding-top:3px}
+.pymkAttachmentList > li{margin-top:2px}
+.pymkAttachment{display:inline;outline:none}
+.pymkAttachmentWithBorder{border-bottom:1px solid #e9e9e9;padding-bottom:15px}
+
+#bootloader_yP28T { height: 42px; }

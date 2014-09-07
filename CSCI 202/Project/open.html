@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<!-- 
+Zach Evans
+CSCI 202
+CRN 20467
+Background: http://static2.grsites.com/archive/textures/paper/paper005.gif
+-->
+<head>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+	<script src="jquery.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="open.js"></script>
+	
+	<title>Zach Evans Project</title>
+	<style>
+	body{
+		background:url(http://static2.grsites.com/archive/textures/paper/paper005.gif);
+	}
+	.upper{
+		border: 3px outset red;
+		background:blue;
+		position:relative;
+	}
+	.lower{
+		border: 3px outset red;
+		background:#FFFF00;
+		position: relative;
+	}
+	.letter{
+		display:inline-block;
+		font-size:100px;
+		position:relative;
+		left:275px;
+		//float:left;
+		
+		
+	}
+	#spring{
+		display: inline-block;
+		background:maroon;
+		color:yellow;
+		border: 3px outset yellow;
+		font-size:50px;
+		position:relative;
+		text-align:center;
+	}
+	#name{
+		display:inline-block;
+		background:darkgreen;
+		color:maroon;
+		border: 3px outset yellow;
+		font-size:50px;
+		position: relative;
+		width:250px;
+		text-align:center;
+	}
+	
+	</style>
+</head>
+<body onLoad = "startMoving()">
+	<div>
+	<div class="letter upper">C</div>
+	<div class="letter lower">S</div>
+	<div class="letter">&nbsp;</div>
+	<div class="letter upper">2</div>
+	<div class="letter lower">0</div>
+	<div class="letter upper">2</div>
+	<div class="letter">&nbsp;</div>
+	<div class="letter lower">P</div>
+	<div class="letter upper">R</div>
+	<div class="letter lower">O</div>
+	<div class="letter upper">J</div>
+	<div class="letter lower">E</div>
+	<div class="letter upper">C</div>
+	<div class="letter lower">T</div>
+	</div>
+	<div id = "spring">
+		<p>Spring 2013</p>
+	</div>
+	<span id="name">
+		<p>Zach Evans</p>
+	</span>
+	
+	
+</body>
+</html>

@@ -1,0 +1,53 @@
+package a01;
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+public class BusCrossing {
+	
+
+	public static void main(String[] args) throws IOException {
+		int nextID = 1; //Next ID for the busses
+		//Scanner inputScanner = new Scanner(System.in);
+		BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
+		
+		Queue <BusThread>northBusQueue= new LinkedList<BusThread>();
+		Queue <BusThread>southBusQueue= new LinkedList<BusThread>();
+		
+		String inputString = inputReader.readLine();
+		String[] inputParts = inputString.split(":");
+		Pattern delayPattern = Pattern.compile("DELAY[(](\\d+)[)]");
+		for(String s : inputParts){
+			s = s.trim();
+			Matcher strMatch = delayPattern.matcher(s);
+			if (s.matches("\\d+")){
+				int numBusses = Integer.parseInt(s);
+				
+			}
+			else if(strMatch.matches()){
+				int delayTime = Integer.parseInt(strMatch.group());
+				try {
+					Thread.sleep(delayTime*1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		
+	/*	{
+			BusThread newBus = new BusThread(nextID);
+			if (newBus.getDirection() == 0){
+				southBusQueue.add(newBus);
+			}
+			else{
+				northBusQueue.add(newBus);
+			}
+			nextID++;
+		}*/
+		
+		
+		System.out.println("Done starting busses");
+		BusThread.printBusses();
+	}
+
+}

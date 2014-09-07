@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!--
+Zach Evans
+CSCI 202
+CRN 20467
+-->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Zach Evans Lab 7</title>
+<script type="text/javascript">
+var imgArray = new Array(30);
+var curRunning = 0;
+for (var i = 0; i <= 29; i++){
+	if (i <= 9){
+		var imgString = "000"+i+".jpg";
+	}
+	else if(i >= 10){
+		var imgString = "00"+i+".jpg"
+	}
+	imgArray[i] = imgString;
+}
+
+function animateEarth(){
+	curRunning = (curRunning + 1)%30;
+	document.getElementById("globe").src = imgArray[curRunning];
+}
+
+</script>
+</head>
+<body>
+	<img src="0000.jpg" alt="earth" id="globe" />
+	<form>
+		<input type="button" name="start" value="Start" onClick="turn = setInterval('animateEarth()', 50);" />
+		<input type="button" name="stop" value="Stop" onClick="clearInterval(turn);">
+	</form>
+		
+
+</body>
+</html>

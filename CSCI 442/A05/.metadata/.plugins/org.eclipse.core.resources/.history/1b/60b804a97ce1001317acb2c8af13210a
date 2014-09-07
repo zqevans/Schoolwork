@@ -1,0 +1,82 @@
+/*
+ * Zach Evans
+ * CSCI 442
+ * Spring 2014
+ * Assignment 5
+ * 
+ * This program searches through an XML file containing class data for 
+ * WWU classes and finds time conflicts, printing out relevant information.
+ */
+
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.io.*;
+import java.util.*;
+
+
+public class ClassConflicts {
+	private static SAXBuilder builder = new SAXBuilder();
+	private static File coursesFile = new File("WWU_courses.xml");
+	private static Hashtable<String, ArrayList<Element>> coursesByRoom = new Hashtable<String, ArrayList<Element>>();
+	public static void main(String[] args) {
+		class sectionComparator implements Comparator<Element>{
+			SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm a");
+			@Override
+			public int compare(Element section1, Element section2){
+				Date section1Date = null;
+				Date section2Date = null;
+				try {
+					section1Date = timeFormat.parse(section1.getAttributeValue("startTime"));
+					section2Date = timeFormat.parse(section2.getAttributeValue("startTime"));
+				} catch (ParseException e) {
+					System.out.println(e.getMessage());
+				}
+				return section1Date.compareTo(section2Date);
+				
+			}
+		}
+		
+		try {
+			Document courseDOM = (Document)builder.build(coursesFile);
+			Element rootNode = courseDOM.getRootElement();
+			
+			
+			for (Element course: rootNode.getChildren("course")){
+				for (Element section: course.getChildren("section")){
+					String sectionRoom = section.getAttributeValue("room");
+					if(coursesByRoom.containsKey(sectionRoom)){
+						coursesByRoom.get(sectionRoom).add(section);
+					}
+					else{
+						ArrayList<Element> newRoomArray = new ArrayList<Element>();
+						newRoomArray.add(section);
+						coursesByRoom.put(sectionRoom, newRoomArray);
+					}
+				}
+			}
+			for (String room : coursesByRoom.keySet()){
+				ArrayList<Element> sectionList = coursesByRoom.get(room);
+				Collections.sort(sectionList, new sectionComparator());
+				System.out.println(room);
+				for (Element section: sectionList){
+					System.out.print(((Element) section.getParent()).getAttributeValue("num")+" ");
+					System.out.println
+				}
+			}
+			
+			
+			
+		} catch (JDOMException e) {
+			System.out.println(e.getMessage());
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+
+	}
+
+}

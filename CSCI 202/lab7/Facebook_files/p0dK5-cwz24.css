@@ -1,0 +1,299 @@
+/*1369322935,178195781*/
+
+.listMemberFacepileFacebar .img{height:24px !important;width:24px !important}
+.listMemberFacepileSearch .img,
+.listMemberFacepileNormal .img{height:25px !important;width:25px !important}
+.listMemberFacepileLarge .img{height:36px !important;width:36px !important}
+.listMemberFacepileLargeCollection .img{height:31px !important;width:31px !important}
+div.listMemberFacepileSearch{height:50px;width:50px}
+div.listMemberFacepileFacebar{height:48px;width:48px}
+div.listMemberFacepileNormal{width:51px;height:51px}
+div.listMemberFacepileLarge{width:75px;height:75px}
+div.listMemberFacepileLargeCollection{height:64px;width:64px}
+div.listMemberFacepileHuge{width:101px;height:101px}
+.listMemberFacepile{line-height:0;outline:none;white-space:normal}
+.listMemberFacepile .firstImg{margin-right:1px}
+.listMemberFacepile .lastImg{margin:1px 0 0 1px}
+.listMemberFacepile.listMemberFacepileSearch .firstImg,
+.listMemberFacepile.listMemberFacepileFacebar .firstImg{margin-right:0}
+.listMemberFacepile.listMemberFacepileSearch .lastImg,
+.listMemberFacepile.listMemberFacepileFacebar .lastImg{margin:0}
+.listMemberFacepile.listMemberFacepileSearch .img{left:0;position:relative}
+.listMemberFacepile .img{display:inline !important}
+.music_artwork{background-position:center center;background-repeat:no-repeat;display:block}
+.art_border{position:relative}
+.art_border:after{border:1px solid rgba(0, 0, 0, .15);bottom:0;content:'';left:0;position:absolute;right:0;top:0}
+.music_play_button{outline:none}
+.button_anchor{display:inline-block}
+.button_anchor .music_button_img{display:inline-block;width:14px;height:14px;background-repeat:no-repeat;vertical-align:middle}
+.music_button_img{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yW/r/VNRyKMavFbX.png);background-repeat:no-repeat;background-size:auto;background-position:-31px 0}
+.button_anchor:hover .music_button_img{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yW/r/VNRyKMavFbX.png);background-repeat:no-repeat;background-size:auto;background-position:-31px -15px}
+.button_anchor:active .music_button_img{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yW/r/VNRyKMavFbX.png);background-repeat:no-repeat;background-size:auto;background-position:-31px -30px}
+.music_playing .music_button_img{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yW/r/VNRyKMavFbX.png);background-repeat:no-repeat;background-size:auto;background-position:-31px -60px}
+.music_playing .button_anchor:hover .music_button_img{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yW/r/VNRyKMavFbX.png);background-repeat:no-repeat;background-size:auto;background-position:-31px -75px}
+.music_playing .button_anchor:active .music_button_img{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yW/r/VNRyKMavFbX.png);background-repeat:no-repeat;background-size:auto;background-position:-31px -90px}
+.music_disabled .music_button_img, .music_disabled .button_anchor:active .music_button_img, .music_disabled .button_anchor:hover .music_button_img{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yW/r/VNRyKMavFbX.png);background-repeat:no-repeat;background-size:auto;background-position:-31px -45px}
+.music_loading .button_anchor:active .music_button_img, .music_loading .button_anchor:hover .music_button_img, .music_loading .button_anchor .music_button_img{background-position:0 0;background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yh/r/LxbLBWWUI55.gif)}
+.artwork_button .button_anchor{display:block;position:relative;overflow:hidden}
+.music_button_img_wrap{position:absolute;top:50%;left:50%}
+.music_show_on_hover .music_button_img_wrap{opacity:0;-moz-transition:opacity .10s ease-out}
+.music_button_trigger_group .music_playing .music_button_img_wrap, .music_button_trigger_group .music_loading .music_button_img_wrap, .music_button_trigger_group.music_playing .music_button_img_wrap, .music_button_trigger_group.music_loading .music_button_img_wrap, .music_button_trigger_group:hover .music_button_img_wrap{opacity:1;-moz-transition-duration:0}
+.artwork_button .music_button_img_wrap .music_button_img{display:block;position:relative;margin-top:-50%;left:-50%}
+.music_disabled.artwork_button .music_button_img_wrap .music_button_img, .artwork_button .music_button_img_wrap .music_loader{display:none}
+.music_loading .artwork_button .music_button_img_wrap
+.music_button_img.music_loader{margin-top:-100%;display:block}
+.button_medium.artwork_button .button_anchor .music_button_img{width:30px;height:30px}
+.button_medium.artwork_button .music_button_img{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yW/r/VNRyKMavFbX.png);background-repeat:no-repeat;background-size:auto;background-position:0 0}
+.button_medium.artwork_button .button_anchor:active .music_button_img, .button_medium.artwork_button .button_anchor:hover .music_button_img{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yW/r/VNRyKMavFbX.png);background-repeat:no-repeat;background-size:auto;background-position:0 -30px}
+.music_playing .button_medium.artwork_button .music_button_img{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yW/r/VNRyKMavFbX.png);background-repeat:no-repeat;background-size:auto;background-position:0 -60px}
+.music_playing .button_medium.artwork_button .button_anchor:hover
+.music_button_img, .music_playing .button_medium.artwork_button .button_anchor:active
+.music_button_img{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yW/r/VNRyKMavFbX.png);background-repeat:no-repeat;background-size:auto;background-position:0 -90px}
+.music_loading .button_medium.artwork_button .button_anchor:active
+.music_button_img, .music_loading .button_medium.artwork_button .button_anchor:hover
+.music_button_img, .music_loading .button_medium.artwork_button .music_button_img{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yW/r/VNRyKMavFbX.png);background-repeat:no-repeat;background-size:auto;background-position:0 -120px}
+.music_loading .button_medium.artwork_button .music_button_img_wrap
+.music_button_img.music_loader{background:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yp/r/DrGcdjdlpCl.gif) 50% no-repeat}
+.music_song_item .track_title{color:#000}
+.music_song_item .track_artists{display:inline}
+.hidePlay .playButton{display:none}
+.song_detailed{border-top:1px solid #e9e9e9;padding-top:5px;padding-bottom:5px}
+.egoGYSJ{margin-left:3px;margin-bottom:2px}
+.egoGYSJImage{margin-top:2px}
+.egoGYSJName{display:inline-block;font-weight:bold;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:162px}
+
+._5-r{margin-left:-3px}
+._5-r._1ln2{margin-left:0}
+._5-r._4jul{margin-bottom:-3px}
+._5-r ._93k{float:left;margin:0 0 3px 3px;width:103px}
+._5-r._620 ._gx9{border:1px solid rgba(138,161,194,.25);display:block;float:left;height:34px;margin:0 0 3px 3px;padding:34px 0 33px;width:101px}
+._5-r._55z0._620 ._gx9{height:59px;padding-top:60px}
+._4jul ._4un3{display:block}
+._1ln2 ._4un3{height:64px;width:64px}
+._1ln2 .uiList > li{border-color:#e9eaed;padding:3px 0}
+._1ln2 .uiList > li:first-child{padding-top:0}
+._1ln2 .uiList > li:last-child{padding-bottom:0}
+._ph5{font-size:11px;line-height:14px}
+._4jul ._ph5{border:1px solid #e9eaed;border-top:none;padding:4px 6px}
+._50nl:hover ._ph5{border-color:#d3d7dc}
+._1ln2 ._ph5{height:64px;padding-right:10px}
+._4jul ._ph5 ._50kb{height:41px}
+._93k ._4-1, ._4jul ._ph5 ._4-0 a, ._4jul ._ph5 ._4-1 a{font-weight:normal;line-height:16px}
+._50nl{display:block}
+._50nl:hover{text-decoration:none}
+._4jul ._ph5 ._4-0 a, ._5-r ._4-1, ._ph5 ._4-if{font-weight:normal;margin-top:1px}
+._93k ._4-jr{right:4px;top:4px}
+._5-r ._4_98{display:block;height:30px;overflow:hidden}
+._5-r ._545n{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/y6/r/Jliuq1yV2IU.png);background-position:center center;background-repeat:no-repeat;height:141px;line-height:141px;width:101px}
+._5-r ._545n._55z0{height:192px;line-height:192px}
+._5-r ._545n._55z0._55z1{height:152px;line-height:152px}
+._545n:hover{background-color:#f2f2f9}
+._545n:hover ._545o{opacity:1}
+.largeStarRating .uiStars i{height:17px;width:17px}
+.largeStarRating .uiStars .emptyStar{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yH/r/MmmFHCK3KAn.png);background-repeat:no-repeat;background-size:auto;background-position:0 0}
+.largeStarRating .uiStars .onefourthStar{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yH/r/MmmFHCK3KAn.png);background-repeat:no-repeat;background-size:auto;background-position:0 -54px}
+.largeStarRating .uiStars .halfStar{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yH/r/MmmFHCK3KAn.png);background-repeat:no-repeat;background-size:auto;background-position:0 -36px}
+.largeStarRating .uiStars .threefourthsStar{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yH/r/MmmFHCK3KAn.png);background-repeat:no-repeat;background-size:auto;background-position:0 -72px}
+.largeStarRating .uiStars .fullStar{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yH/r/MmmFHCK3KAn.png);background-repeat:no-repeat;background-size:auto;background-position:0 -18px}
+.stars_breakdown .title{border-bottom:1px solid #3a3a3a;padding-bottom:5px;margin-bottom:6px}
+.stars_breakdown .gray_bar{margin-left:4px;margin-right:4px;background:#3b3b3b;height:8px}
+.stars_breakdown .white_bar{background:white;height:8px}
+.stars_breakdown .uiStarWhite{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yH/r/MmmFHCK3KAn.png);background-repeat:no-repeat;background-size:auto;background-position:0 -90px;display:inline-block;height:11px;width:11px}
+.stars_breakdown .stars{padding-top:1px;text-align:right}
+.stars_breakdown table{border-spacing:0}
+.stars_breakdown td{padding:0}
+.stars_breakdown .star_number{text-shadow:0 0 1px black}
+._51it{margin-right:1px}
+._51iu{padding-bottom:1px;padding-top:1px}
+._5789 ._51it{display:block}
+._51it, ._570z .uiButtonText{display:none}
+._51iv ._51iw{margin-top:2px}
+html ._51iv ._51it ._570z .itemIcon, html ._51iv ._51it ._570z .defaultIcon{margin:1px 0 1px -2px}
+._5786{padding-left:3px;position:relative;text-align:left;width:244px}
+._5787{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yp/r/MuC1sRU2KE7.png);background-repeat:no-repeat;background-size:auto;background-position:right -6px;background-color:transparent;border-color:#bdc7d8;box-shadow:none;color:#777;font-weight:normal}
+._5786 ._5788{position:absolute;right:7px;top:7px}
+._5787 ._5788{display:none}
+._w8_{padding:3px 3px 1px}
+._w90 ._w8_, ._1f8g ._w8_{padding:0}
+._w90 ._1g2x{margin:0 0 -2px}
+html ._w8_ .fbTimelineFriendsBoxLarge{margin:0 0 1px}
+._w8_ .fbTimelineFriendsBoxLarge .friendsBoxInner{padding-top:0}
+html ._4se3{background:#f6f7f8;font-family:'Helvetica Neue', Helvetica, Arial, 'lucida grande',tahoma,verdana,arial,sans-serif;line-height:21px;padding:20px 20px 22px}
+html ._4se3:hover{background:#e9eaed}
+._51r4{float:left;margin:5px 9px 0 0}
+._51r5{overflow:hidden}
+._w8_ ._51ki{border-bottom:1px solid #eee;display:block;margin-bottom:3px;padding:8px 5px 8px 12px}
+._w8_ ._51w7{float:left}
+._w8_ ._51w6{display:block;overflow:hidden}
+._54j8{background-color:#d2d6dc;border-bottom:1px solid #adb3bc;border-top:1px solid #adb3bc;margin:-4px 0 3px -3px;width:321px}
+._54j9{padding:12px 12px 8px}
+._54ja{border-top:1px solid #c8ccd3;color:#6a7180;display:block;font-size:12px;height:20px;padding:12px;position:relative}
+._54ja:hover{background-color:#dadde2;color:#4e5665;text-decoration:none}
+html ._122{border-collapse:separate;border-spacing:3px;margin:-13px 0 -15px -18px}
+._122 .uiScaledImageContainer{height:98px;width:98px}
+._4lh ._122 .uiScaledImageContainer{height:103px;width:103px}
+._55-w{border-bottom:1px solid #eee;padding:10px 15px}
+._55-w .uiIconText .img{margin-top:1px}
+._55-x{display:block;overflow:hidden}
+html .timelineReportContainer .timelineReportContent .timelineUnitContainer._503z{border:0;margin:0 auto;padding:2px 0 0;width:321px}
+._4_uf{border-bottom:1px solid #e9eaed;font-size:11px;margin:0 12px;padding:10px 0}
+._4_uf:last-child{border-bottom:none}
+._4_vp{display:inline-block;width:275px}
+._558a ._4_vp{width:255px}
+._4_ug{color:#6a7480;font-weight:bold}
+._4_uh{margin-top:2px}
+._4_uh, ._4_uh a{color:#adb3bc}
+._513w{margin-top:1px}
+html ._51iw{margin-right:6px}
+._56m_, ._56n0{visibility:hidden}
+._4_uf:hover ._56m_, ._4_uf:hover ._56n0{visibility:visible}
+._56n0{display:inline-block;height:10px;padding:4px;width:10px}
+._57qo{border-bottom:1px solid #eee;padding:10px 15px}
+._57qp{padding-bottom:5px}
+._57qq{color:#999}
+._57qr{margin-left:5px;vertical-align:middle}
+._56n0:hover ._56n1{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yp/r/MuC1sRU2KE7.png);background-repeat:no-repeat;background-size:auto;background-position:-245px -4px}
+._56n0:hover{background:#3b5998}
+._56n1{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yp/r/MuC1sRU2KE7.png);background-repeat:no-repeat;background-size:auto;background-position:-256px -4px;display:block;height:10px;width:10px}
+html ._2wp{margin:-13px -23px 0 0;padding:7px 0 3px}
+html ._2yh{margin:-10px -25px 0 0}
+._2wp ._2yg{background:#fff;position:absolute;width:427px}
+html ._2wp._2yh ._2wr{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/y7/r/DHT1Hx5rs9I.png);background-repeat:no-repeat;background-size:auto;background-position:-663px -50px;left:7px;height:9px;top:27px;width:16px}
+._2wp._2wq ._2-s{display:none}
+._2wp._2wq{width:300px}
+._2wp.uiComposerOpen{width:427px}
+._2wq.uiComposerOpen{width:300px}
+._2wp.uiComposerOpen ul.fbTimelineComposerAttachments{padding-left:0;float:right}
+div._2wp.fbTimelineComposer .attachmentLoader{left:-15px;right:auto}
+._2wp ._2yg, ._2wp .uiComposerMetaContainer{border:1px solid #8c8c8c;border-bottom:1px solid #666;box-shadow:0 3px 8px rgba(0, 0, 0, .3);left:2px;margin-top:1px}
+._2wp .fbTimelineComposerAttachments .uiComposerAttachment .nub{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/y7/r/DHT1Hx5rs9I.png);background-repeat:no-repeat;background-size:auto;background-position:-663px -50px;height:9px;top:27px;width:16px}
+._2wp .attachmentLifeEvents .typesMenuSelected{margin-right:-48px}
+._2wq .attachmentLifeEvents .typesMenuSelected{margin-right:-5px;width:126px}
+._2wq .attachmentLink .attachmentName, .fbTimelineStickyHeaderHidden .fbTimelineStickyHeaderComposer{display:none}
+.fbTimelineFriendsBoxLarge{width:409px;margin:-16px 0 -12px -18px}
+.fbTimelineFriendsBoxLarge .timelineReportHeader{border-bottom:1px solid #e5e5e5}
+.fbTimelineFriendsBoxLarge .friendsBoxInner{padding-top:3px}
+.fbTimelineFriendsBoxLarge .friendListing{margin:3px 0 0 3px}
+.fbTimelineFriendsBoxLarge .friendHovercard{display:block;position:relative}
+.fbTimelineFriendsBoxLarge .friendHovercard:hover{text-decoration:none}
+.fbTimelineFriendsBoxLarge .fbTimelineBoxCountPostsdouble, .fbTimelineFriendsBoxLarge .friendPhoto{display:block;height:98px;width:98px}
+.fbTimelineFriendsBoxLarge .fbTimelineBoxCountPostsdouble{line-height:98px}
+.fbTimelineFriendsBoxLarge .friendListingWider .friendPhoto{width:99px}
+.fbTimelineFriendsBoxLarge .friendName{background:#000;background:-moz-linear-gradient(transparent, rgba(0, 0, 0, .7));bottom:0;color:#fff;display:block;left:0;padding-top:5px;position:absolute;width:100%;word-wrap:break-word}
+.timelineReportContainer .seeAll{margin:17px 12px 0 0}
+.fbTimelineFriendsBoxLarge.timelineReportContainer .timelineReportContent .timelineUnitContainer{margin-top:2px}
+.fbTimelineFriendsBoxLarge.timelineReportContainer .timelineUnitContainer .aboveUnitContent{margin-top:-12px}
+._57_1, ._57_2{position:absolute;right:4px;top:4px}
+._57_3{border-top:1px solid rgba(0, 0, 0, .1);height:15px;padding:5px}
+._582a{height:23px}
+._4zpu{display:inline-block}
+._4zpu ._4-py{display:inline-block;margin:0}
+._4oa2{color:#666;padding-bottom:10px}
+._4oa2 .uiContextualLayer{margin-bottom:5px}
+._538q{border:1px solid #e9eaed}
+._538r{color:#adb3bc}
+._6r5{display:inline-block;line-height:22px;width:300px}
+html ._6r5, html ._6r5 .wrap{border-color:#adb3bc}
+._4kmj .uiSelector{border:1px solid transparent}
+._4kmj{position:relative}
+._6r5 .wrap{padding-left:20px}
+._4iab{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/y7/r/DHT1Hx5rs9I.png);background-repeat:no-repeat;background-size:auto;background-position:-518px -25px;height:19px;left:1px;position:absolute;top:2px;width:22px;z-index:2}
+._4sj0 ._6r5{line-height:20px;margin-bottom:3px;width:297px}
+._4sj0 ._4-k6{width:256px}
+._4sj0 .uiSelector{border:0}
+._6r5.typeaheadLoading{background:#fff url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yb/r/GsNJNwuI-UM.gif) no-repeat 275px 5px}
+.timelineRecentActivityStories{margin:-4px 0 -12px 0}
+.recentActivityContainer .recentActivityUnit .timelineReportHeader{background:#f1f1f1;border-bottom:1px solid #d3d3d3;font-size:11px;font-weight:normal;margin:-12px -12px 7px;padding:5px 0 5px 12px}
+.recentActivityContainer div.timelineRecentActivityPagerWrapper{margin:0 -12px}
+.recentActivityContainer .timelineRecentActivityPagerWrapper a.timelineRecentActivityPager, .recentActivityContainer .timelineRecentActivityPagerWrapper .uiMorePagerLoader{border:none;padding:9px 5px 8px}
+.fbTimelineUnit .ogItemHide{float:right;opacity:0}
+.ogListItem:hover .ogItemHide{opacity:1}
+.recentActivityContainer .recentActivityUnit .timelineRecentActivityLightHeader{margin:-15px -15px 4px}
+.timelineRecentActivityStory{margin:0 -12px}
+.timelineRecentActivityStory::after{background:#000;content:'';display:block;height:1px;margin-top:-1px;opacity:.1}
+.timelineRecentActivityStory:hover{background:#edeff4}
+.timelineRecentActivityThumb{background:#f6f7f9}
+.fbTimelineRecentActivityThumbWrap{height:58px;overflow:hidden;position:absolute;width:98px}
+.timelineRecentActivityStory .fbTimelineRecentActivityAppWrap{bottom:2px;position:absolute;left:4px}
+.timelineRecentActivityStory .fbTimelineRecentActivityAppWrapText{bottom:0;left:0;padding:8px 3px 4px}
+.timelineRecentActivityStory:hover .fbTimelineRecentActivityAppWrapText{background:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/y7/r/4haj41DucMJ.png) repeat-x bottom left}
+.fbTimelineRecentActivityAppWrap .overlayAppName{color:#fff;display:inline-block;text-shadow:0 0 5px #000;width:71px}
+.fbTimelineRecentActivityAppWrap:hover .overlayAppName{text-decoration:underline}
+.timelineRecentActivityTextBlock{min-height:58px;padding:0 12px 0 8px;margin-left:98px;position:relative;width:284px}
+.timelineRecentActivityStory .cutoffActionListItems{visibility:hidden}
+.timelineRecentActivityStory:hover .cutoffActionListItems, .timelineRecentActivityStory .cutoffActionListItems .openToggler{visibility:visible}
+.timelineRecentActivityTextBlock .timelineRecentActivityHideSelector{position:absolute;right:0;top:0;visibility:visible}
+.timelineRecentActivityStory .timelineRecentActivityHideSelector .uiSelectorButton{opacity:0}
+.timelineRecentActivityStory:hover .timelineRecentActivityHideSelector .uiSelectorButton, .timelineRecentActivityStory .timelineRecentActivityHideSelector .uiSelectorButton:focus, .timelineRecentActivityStory .timelineRecentActivityHideSelector .openToggler .uiSelectorButton{opacity:1}
+.timelineRecentActivityStory .timelineRecentActivityStoryFooter{color:#999;line-height:1.8}
+.timelineRecentActivityStory .recentActivityUFI{margin:0 -10px 0 0;width:282px}
+.timelineRecentActivityStory .storyPrivacy{left:2px;position:relative;top:-1px}
+.timelineRecentActivityStory .uiStreamPrivacy{left:5px;top:3px}
+.recentActivityContainer .timelineRecentActivityStories .timelineRecentActivityStory .onlyMeBorder{background-position:0 7px;margin:0}
+.recentActivityContainer .timelineRecentActivityStories .timelineRecentActivityStory .onlyMeBorderBottom{background-position:0 -8px;margin-bottom:1px}
+.fbTimelineScrubber{background-color:#e7ebf2;padding:8px 0 8px 1px;top:38px;width:122px;z-index:1}
+body.hasViewasChromeBar .fbTimelineScrubber{padding-top:45px}
+.fbTimelineScrubber a, .fbTimelineScrubber .selected ul a{border-left:5px solid #c8d1e2;color:#94a0c1;display:block;font-weight:normal;outline:none;padding:4px 0 4px 6px}
+.fbTimelineScrubber li{margin-bottom:1px}
+.fbTimelineScrubber a:hover, .fbTimelineScrubber a:focus{border-left-color:#a7b4d1;text-decoration:underline}
+.fbTimelineScrubber .selected a, .fbTimelineScrubber .selected ul a{border-left-color:#627aad}
+.fbTimelineScrubber ul li{border:0;margin:0}
+.fbTimelineScrubber .selected a{color:#627aad;font-weight:bold}
+.fbTimelineScrubber ul{display:none}
+.fbTimelineScrubber .selected ul.loaded{display:block}
+.fbTimelineScrubber ul{margin-top:-4px}
+.fbTimelineScrubber ul a{padding:1px 0 1px 12px !important}
+.fbTimelineScrubber .selected .selected a{color:#627aad;font-weight:normal}
+.fbTimelineScrubber ul ul{display:none !important}
+div.fbTimelineInlineSectionHeader{background:none;border:0;height:40px;text-align:center}
+.fbTimelineTimePeriod div.fbTimelineInlineSectionHeader{padding-top:0}
+.fbTimelineInlineSectionHeader .uiHeaderTitle{color:#1c2a47}
+.fbTimelineTabHeader{background:none;margin:0 10px 20px}
+.fbTimelineTabHeader h4{font-size:16px;width:400px}
+.fbTimelineAboutMeHeader{margin:0 0 15px;background:none}
+.fbTimelineTabSection .fbTimelineAboutMeHeader, .fbTimelineCompactSection .fbTimelineAboutMeHeader{margin:15px 15px 15px 22px}
+.timelineLayout .fbTimelineAboutMeHeader h4{font-size:16px}
+.fbTimelineAboutMeHeader h4 a{color:#333}
+.fbTimelineContentHeader h3.uiHeaderTitle, .fbTimelineInlineSectionHeader h3.uiHeaderTitle{background:#a9b5d3;border-radius:3px;color:#fff;display:inline-block;font-size:14px;font-weight:normal;margin:0;padding:6px 11px;word-wrap:normal}
+.fbTimelineContentHeader h3 a{color:#8897bd}
+.fbTimelineContentHeader{margin-bottom:15px;text-align:center}
+.fbTimelinePermalink .fbTimelineSection .fbTimelineContentHeader{margin-bottom:0}
+.fbTimelineContentHeader .headerPlus{border-left:1px solid #e5e5e5;display:inline-block;height:28px;margin:-7px -12px 0 0;text-align:center;width:37px}
+.fbTimelineAboutMeHeader .iconImg{margin-top:2px}
+.fbTimelineContentHeader .headerPlus .img{margin-top:9px}
+.relConnector{display:none}
+.relStatus_2 .relConnector_2,
+.relStatus_3 .relConnector_3,
+.relStatus_4 .relConnector_4,
+.relStatus_5 .relConnector_5,
+.relStatus_6 .relConnector_6,
+.relStatus_10 .relConnector_10,
+.relStatus_11 .relConnector_11{display:inline}
+.relationshipWarning .statusChange,
+.relationshipWarning .statusSingle{background-color:#edeff4;border:1px solid #d8dfea;margin-bottom:5px}
+.relationSelector{height:22px;margin-top:0}
+._3qya{height:130px;width:130px}
+._4i1r{min-height:78px}
+._3qyc{width:130px}
+._51mc{margin-top:3px}
+.sp_c1qdh5{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yH/r/MmmFHCK3KAn.png);background-size:auto;background-repeat:no-repeat;display:inline-block;height:11px;width:11px}
+.sx_c692f7{width:17px;height:17px;background-position:0 0}
+.sx_3764a3{width:17px;height:17px;background-position:0 -18px}
+.sx_49adcf{width:17px;height:17px;background-position:0 -36px}
+.sx_a03dc0{width:17px;height:17px;background-position:0 -54px}
+.sx_068bd8{width:17px;height:17px;background-position:0 -72px}
+.sx_d8b6ac{background-position:0 -90px}
+.sx_91e11b{background-position:0 -102px}
+.sx_742eae{background-position:0 -114px}
+.sx_b645a1{background-position:0 -126px}
+.sx_bfe68d{background-position:0 -138px}
+.sx_ef5771{background-position:0 -150px}
+.uiStars{display:inline-block;position:relative;vertical-align:middle}
+.uiStars i{display:inline-block;height:11px;width:11px}
+.uiStars .emptyStar{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yH/r/MmmFHCK3KAn.png);background-repeat:no-repeat;background-size:auto;background-position:0 -102px}
+.uiStars .onefourthStar{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yH/r/MmmFHCK3KAn.png);background-repeat:no-repeat;background-size:auto;background-position:0 -138px}
+.uiStars .halfStar{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yH/r/MmmFHCK3KAn.png);background-repeat:no-repeat;background-size:auto;background-position:0 -126px}
+.uiStars .threefourthsStar{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yH/r/MmmFHCK3KAn.png);background-repeat:no-repeat;background-size:auto;background-position:0 -150px}
+.uiStars .fullStar{background-image:url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/yH/r/MmmFHCK3KAn.png);background-repeat:no-repeat;background-size:auto;background-position:0 -114px}
+
+#bootloader_CRk5H { height: 42px; }

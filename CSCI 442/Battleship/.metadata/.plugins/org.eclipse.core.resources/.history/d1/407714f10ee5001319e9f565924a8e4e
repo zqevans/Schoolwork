@@ -1,0 +1,89 @@
+package battleship;
+import java.util.*;
+import java.net.*;
+import java.io.*;
+
+public class Player extends Thread{
+	private GameThread currentGame = null; //Game the player is currently in
+	private Socket playerSock; //Socket for the player client
+	private PrintWriter playerOut; //Output stream for the player client
+	private BufferedReader playerIn; //Input stream for the player client
+	
+	
+	private String playerName; //The player's name
+	private ArrayList<Point> points; //A list of points where the player has ships
+	public boolean allPlaced; //All of the ships have been placed
+	public boolean moved;
+	
+	
+	public Player(Socket playerSock){
+		this.points = new ArrayList<Point>();
+		this.playerSock = playerSock;
+		this.allPlaced = false;
+		this.moved = false;
+		
+		try {
+			this.playerOut = new PrintWriter(playerSock.getOutputStream(), true);
+			this.playerIn = new BufferedReader(new InputStreamReader(playerSock.getInputStream()));
+			
+		} catch (IOException e) {
+			System.out.println("Couldn't get socket output stream.");
+		}
+		Globals.addPlayer(this);
+	}
+	
+	public void sendMessage(String msg){
+		this.playerOut.println(msg);
+	}
+	
+	public void setPlayer(String name){
+		this.playerName = name;
+	}
+	public String getPlayer(){
+		return this.playerName;
+	}
+	public void setGame(GameThread newGame){
+		this.currentGame = newGame;
+	}
+	
+	public void addPoint(Point inShip){
+		this.points.add(inShip);
+	}
+	
+	private void processClientMessage(String clientMessage){
+		if (clientMessage.startsWith("Name: ")){
+			this.setName(clientMessage.substring(6));
+		}
+		else if(clientMessage.startsWith("Ships: ")){
+			String[] pointArray = clientMessage.substring(7).split(" ");
+			for (String point: pointArray){
+				Point newShip = new Point(point.charAt(0), Integer.parseInt(point.substring(1)));
+				this.addPoint(newShip);
+			}
+			this.allPlaced = true;
+		}
+		else if(clientMessage.startsWith("Attack: ")){
+			String attackCoord = clientMessage.substring(8);
+			Point attackPoint = new Point(attackCoord.charAt(0), Integer.parseInt(attackCoord.substring(1)));
+			for (Point playerPoint: points){
+				
+			}
+		}
+		else{
+			System.out.println("Unknown message: "+clientMessage);
+		}
+	}
+	
+	public void run(){
+		String clientMessage;
+		try {
+			System.out.println("Starting client read loop");
+			while((clientMessage = playerIn.readLine()) != null){
+				processClientMessage(clientMessage);
+			}
+			System.out.println("Client disconnected");
+		} catch (IOException e) {
+			Globals.removePlayer(this);
+		}
+	}
+}

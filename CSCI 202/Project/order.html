@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Order Form</title>
+	<meta charset='utf-8'> 
+	<script type='text/javascript'>
+	function validate(){
+		var form = document.orderForm;
+		var fName = form.fname.value;
+		var lName = form.lname.value;
+		var email = form.email.value;
+		var phone = form.phone.value;
+		var errorString = "";
+		if (fName.length == 0){
+			errorString += "Please enter a first name. ";
+		}
+		if (lName.length == 0){
+			errorString += "Please enter a last name. ";
+		}
+		var emailRegexp = /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/;
+		if (!emailRegexp.test(email)){
+			errorString += "Please enter a valid email address. ";
+		}
+		var phoneRegexp = /\(\d{3}\)\d{3}-\d{4}/;
+		if(!phoneRegexp.test(phone)){
+			errorString += "Please enter a valid phone number. ";
+		}
+		if(errorString.length == 0){
+			window.location.href="slideshow.html";
+		}
+		else{
+			alert(errorString);
+		}
+	}
+	</script>
+	<style>
+	a{
+		border: 1px outset black;
+		background:lightgray;
+		padding:5px;
+		text-decoration:none;
+	}
+	
+	</style>
+</head>
+<body>
+	<a href="intro.html">Return to Intro</a>
+	<br/>
+	<br/>
+	<form name="orderForm" method="post">
+		<legend>First Name: </legend>
+		<input type="text" name="fname"/>
+		<br/>
+		<legend>Last Name: </legend>
+		<input type="text" name="lname"/>
+		<br/>
+		<legend>Email: </legend>
+		<input type="text" name="email"/>
+		<br/>
+		<legend>Phone: </legend>
+		<input type="text" name="phone">
+		<br/>
+		<input type="submit" value="Submit Form" onClick = "validate()"/>
+	</form>
+</body>
+</html>

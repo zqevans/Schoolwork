@@ -1,0 +1,22 @@
+package cs345evansz2;
+
+public class Path {
+	
+	public String pathName;
+	public VocabItem pathVocab;
+	public Room sourceRoom, destRoom;
+	
+	
+
+	Path(String inName, VocabItem inVocab, Room inSource, Room inDest){
+		pathName = inName;
+		pathVocab = inVocab;
+		sourceRoom = inSource;
+		destRoom = inDest;
+	}
+	
+	public static Path makePath(String inName, VocabItem inVocab, Room inSource, Room inDest){
+		return new Path(inName,inVocab, inSource, inDest);
+	}
+	
+}

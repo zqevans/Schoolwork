@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Previous Lab Slideshow</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+	<script type="text/javascript">
+		var picArray = new Array();
+		for (var i = 0; i <= 7; i++){
+			picArray[i] = "Lab"+(i+1)+".png";
+		}
+		var picIndex = 0;
+		var currentPic = picArray[0];
+		function nextPic(){
+			picIndex = (picIndex+1)%picArray.length;
+			var image = document.getElementById("pic");
+			image.src = picArray[picIndex];
+		}
+		function prevPic(){
+			picIndex = (picIndex-1);
+			if (picIndex == -1){
+				picIndex = 7;
+			}
+			var image = document.getElementById("pic");
+			image.src = picArray[picIndex];
+		}
+		function keyChange(event){
+			var key = event.which;
+			if (key == 102){
+				nextPic();
+			}
+			else if(key==98){
+				prevPic();
+			}
+		}
+	</script>
+	<style>
+		body{background:gray;}
+		a{
+			border: 1px outset black;
+			background:white;
+			padding:5px;
+			text-decoration:none;
+		}
+	</style>
+</head>
+<body onKeyPress='keyChange(event)'>
+	<a href="intro.html">Return to Intro</a>
+	<button onClick = 'prevPic()'>Previous</button>
+	<button onClick = 'nextPic()'>Next</button>
+	<br/>
+	<img src = "Lab1.png" alt="picture" id = "pic"/>
+</body>
+</html>

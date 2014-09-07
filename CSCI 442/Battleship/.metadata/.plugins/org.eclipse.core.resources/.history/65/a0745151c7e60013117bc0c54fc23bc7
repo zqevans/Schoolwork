@@ -1,0 +1,27 @@
+package battleship;
+public class Point {
+	private char letter;
+	private int number;
+	private boolean hit;
+	public Point(char let, int num){
+		this.letter = let;
+		this.number = num;
+		this.hit = false;
+	}
+	public char getLetter(){
+		return this.letter;
+	}
+	public int getNumber(){
+		return this.number;
+	}
+	public boolean isHit(){
+		return this.hit;
+	}
+	public void setHit(boolean hit){
+		this.hit = hit;
+	}
+	public static boolean samePoint(Point p1, Point p2){
+		return (p1.getLetter() == p2.getLetter() && p1.getNumber() == p2.getNumber());
+	}
+	
+}

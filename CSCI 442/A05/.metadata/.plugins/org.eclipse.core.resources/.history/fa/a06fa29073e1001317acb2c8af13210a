@@ -1,0 +1,11 @@
+
+import org.jdom2.*;
+
+public class ClassConflicts {
+	SAXBuilder builder = new SAXBuilder();
+	public static void main(String[] args) {
+		
+
+	}
+
+}

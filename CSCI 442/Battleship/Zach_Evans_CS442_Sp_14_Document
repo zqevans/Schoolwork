@@ -1,0 +1,9 @@
+Purpose: The purpose of this program is to have a networked version of the classic board game Battleship
+to show comprehension of the topics learned in CSCI 442. 
+
+Server Main Class: ServerMain
+Client Main Class: ClientMain
+
+The server needs a port as a command line argument.
+The client has no command line arguments.
+

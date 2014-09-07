@@ -1,0 +1,108 @@
+package a01;
+import java.util.*;
+import java.util.concurrent.atomic.*;
+
+public class BusThread extends Thread {
+	private static AtomicInteger departureIndex = new AtomicInteger(1);
+//	public static ArrayList<BusThread> busses = new ArrayList<BusThread>();
+	private static ArrayList<BusThread> busBuffer = new ArrayList<BusThread>();
+	public static Queue <BusThread>northBusQueue= new LinkedList<BusThread>();
+	public static Queue <BusThread>southBusQueue= new LinkedList<BusThread>();
+	private static int timeToCross = 4;
+	private static Random rand = new Random();
+	
+	public int vehicleID;
+	public int direction;
+	
+	private BusThread( int vehicleID){ //Constructor
+		this.vehicleID = vehicleID;
+		this.direction = rand.nextInt(2);
+	}
+	
+	public static void makeBus(int vehicleID){ //Constructor wrapper
+		BusThread newBus = new BusThread(vehicleID);
+		if (newBus.getDirection() == 0){
+			northBusQueue.add(newBus);
+		}
+		else{
+			southBusQueue.add(newBus);
+		}
+		newBus.start();
+	}
+	
+	public synchronized static ArrayList<BusThread> getBusBuffer(){
+		return busBuffer;
+	}
+	
+	public int getID(){
+		return this.vehicleID;
+	}
+	public int getDirection(){
+		return this.direction;
+	}
+	
+	public String getDirecString(){
+		return this.direction == 0?"North":"South";
+	}
+	
+	public static void printBusIterable(Iterable<BusThread> it){
+		int first = 1;
+		for(BusThread bt: it){
+			if (first == 1){
+				first = 0;
+				System.out.print(bt.getID());
+			}
+			else{
+				System.out.print(", "+bt.getID());
+			}
+		}
+	}
+	
+	
+	
+	public void run(){ //Run function
+		OneVehicle(this.vehicleID, this.direction, timeToCross);
+	}
+	
+
+	public void OneVehicle(int vehicle_id, int direc, int time_to_cross){
+		ArriveSection(direc);
+		CrossSection(vehicle_id,direc,time_to_cross);
+		ExitSection(vehicle_id,direc);
+	}
+	
+	private void ArriveSection(int direc){
+		System.out.println("Bus #"+this.vehicleID+" arrived heading "+this.getDirecString());
+		while(!busBuffer.contains(this)){
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	private void CrossSection(int vehicle_id, int direc, int time_to_cross){
+		System.out.print("Bus #"+vehicle_id+" crossing heading "+this.getDirecString()+" ");
+		System.out.print("North: ");
+		printBusIterable(northBusQueue);
+		System.out.print(" South: ");
+		printSouthQueue();
+		System.out.print("VU: ");
+		printBusBuffer();
+		System.out.println();
+		try{
+			Thread.sleep(time_to_cross*1000);
+		}
+		catch(InterruptedException e){
+			e.printStackTrace();
+		}
+	}
+	private void ExitSection(int vehicle_id, int direc){
+		System.out.println("Bus #"+vehicle_id+" exiting going "+this.getDirecString()+". Departure Index: "+departureIndex.getAndIncrement());
+		busBuffer.remove(this);
+		
+	}
+	
+	
+	
+}

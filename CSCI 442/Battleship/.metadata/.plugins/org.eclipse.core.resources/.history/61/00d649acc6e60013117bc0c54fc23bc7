@@ -1,0 +1,111 @@
+package battleship;
+import java.util.*;
+import java.net.*;
+import java.io.*;
+
+public class Player extends Thread{
+	private GameThread currentGame = null; //Game the player is currently in
+	private Socket playerSock; //Socket for the player client
+	private PrintWriter playerOut; //Output stream for the player client
+	private BufferedReader playerIn; //Input stream for the player client
+	private String playerName; //The player's name
+	private ArrayList<Ship> ships; //A list of ships a player has
+	public boolean allPlaced; //All of the ships have been placed
+	public boolean moved;
+	public boolean disconnected;
+	
+	public Player(Socket playerSock){
+		this.ships = new ArrayList<Ship>();
+		this.playerSock = playerSock;
+		this.allPlaced = false;
+		this.moved = false;
+		this.disconnected = false;
+		
+		try {
+			this.playerOut = new PrintWriter(playerSock.getOutputStream(), true);
+			this.playerIn = new BufferedReader(new InputStreamReader(playerSock.getInputStream()));
+			
+		} catch (IOException e) {
+			System.out.println("Couldn't get socket output stream.");
+		}
+		Globals.addPlayer(this);
+	}
+	public void sendMessage(String msg){
+		this.playerOut.println(msg);
+	}
+	public void setPlayer(String name){
+		this.playerName = name;
+	}
+	public String getPlayer(){
+		return this.playerName;
+	}
+	public void setGame(GameThread newGame){
+		this.currentGame = newGame;
+	}
+	public GameThread getGame(){
+		return this.currentGame;
+	}
+	
+	public void addShip(Ship inShip){
+		this.ships.add(inShip);
+	}
+	
+	public boolean checkHit(Point hitPoint){ //See if it's hit or miss
+		for (Ship possibleShip: this.ships){
+			for (Point shipPoint : possibleShip.getPoints()){
+				if (Point.samePoint(hitPoint, shipPoint)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean takeHit(Point hitPoint){ //Hit ship and see if it sinks
+		for (Ship possibleShip: this.ships){
+			for (Point shipPoint : possibleShip.getPoints()){
+				if (Point.samePoint(hitPoint, shipPoint)){
+					possibleShip.takeHit(hitPoint);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private void processClientMessage(String clientMessage){
+		if (clientMessage.startsWith("Name: ")){
+			this.setName(clientMessage.substring(6));
+		}
+		else if(clientMessage.startsWith("Ships: ")){
+			
+			String[] shipArray = clientMessage.substring(6).split(";");
+			for (String shipInfo: shipArray){
+				String[] shipParts = shipInfo.split(",");
+				this.addShip(new Ship(shipParts[0], shipParts[1].trim().split(" ")));
+			}
+			this.allPlaced = true;
+		}
+		else if(clientMessage.startsWith("Attack: ")){
+			String attackCoord = clientMessage.substring(8);
+			Point attackPoint = new Point(attackCoord.charAt(0), Integer.parseInt(attackCoord.substring(1)));
+			currentGame.attackEnemy(this, attackPoint);
+		}
+		else{
+			System.out.println("Unknown message: "+clientMessage);
+		}
+	}
+	
+	public void run(){
+		String clientMessage;
+		try {
+			while((clientMessage = playerIn.readLine()) != null){
+				processClientMessage(clientMessage);
+			}
+			System.out.println("Client disconnected");
+			Globals.removePlayer(this);
+		} catch (IOException e) {
+			Globals.removePlayer(this);
+		}
+	}
+}

@@ -1,0 +1,52 @@
+/*
+* Zach Evans
+* CSCI 442
+* Prof. Granier
+* Assignment 3
+*/
+import javax.swing.*;
+import java.awt.*;
+
+public class GaltonBoard extends JFrame {
+
+	static NewPanel boardPanel = new NewPanel();
+	
+	public GaltonBoard(){
+		boardPanel = new NewPanel();
+		add(boardPanel);
+	}
+	
+	public static void main(String[] args) {
+		GaltonBoard frame = new GaltonBoard();
+		frame.setSize(800,600);
+		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		boardPanel.addLine(0, 0, 50, 50);
+		
+		
+	}
+
+}
+class NewPanel extends JPanel { 
+	protected void addLine(int x1, int x2, int y1, int y2){
+		  Graphics panelGraphics = this.getGraphics();
+		  panelGraphics.drawLine(x1, y1, x2, y2);
+	  }  
+	
+	
+	@Override
+	  
+	  protected void paintComponent(Graphics g) {
+	    super.paintComponent(g);
+	    int panelHeight = this.getHeight();
+	    int panelWidth = this.getWidth();
+	    int dotWidth = 10;
+	    
+	    g.fillOval(panelWidth/2-dotWidth/2,panelHeight/4-dotWidth/2,dotWidth, dotWidth);
+	    g.drawRect(0, 0, panelWidth, panelHeight);
+	    g.setFont(Font.getFont("Comic Sans MS"));
+	    g.drawString("Draw me", panelWidth/2-25, 50);
+	    
+	  }
+	}

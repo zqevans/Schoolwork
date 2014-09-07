@@ -1,0 +1,112 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.JPanel;
+@SuppressWarnings("serial")
+abstract class BoardSquare extends JPanel implements MouseListener{
+
+	protected Point loc;
+	protected boolean enemySquare;
+	protected BoardSquare[][] parentGrid;
+	protected Color squareColor = new Color(200,200,200);
+	protected boolean occupied;
+	protected Ship occupyingShip;
+	
+	/**<p>This is the constructor for a square on a game board.</p>
+	 * @param letter The letter coordinate for the square
+	 * @param num The number coordinate for the square
+	 * @param parentGrid The grid holding the square
+	 */
+	public BoardSquare(char letter, int num, BoardSquare[][] parentGrid){
+		
+		this.loc = new Point(letter, num);
+		this.parentGrid = parentGrid;
+		this.addMouseListener(this);
+		occupied = false;
+		occupyingShip = null;
+	}
+	
+	/**
+	 * <p>This function gets the location for the square.</p>
+	 * @returns A Point object holding the location of the square
+	 */
+	public Point getLoc(){
+		
+		return this.loc;
+	}
+	
+	
+	/**
+	 * <p>This is the abstract method to hit a square </p>
+	 */
+	public abstract void hit();
+	
+	@Override
+	public void paintComponent(Graphics g){
+		super.paintComponent(g);
+		g.setColor(squareColor);
+		g.fillRect(2, 2, this.getWidth()-4, this.getHeight()-4);
+	}
+	
+	/**
+	 * <p>This is a setter for the occupying ship</p>
+	 * @param s A ship to set as the square's occupying ship
+	 */
+	public void setOccupyingShip(Ship s){
+		this.occupyingShip = s;
+	}
+	
+	/**
+	 * <p>This sets the occupied status of the square</p>
+	 * @param occupied A boolean holding whether or not the square is occupied
+	 */
+	public void setOccupied(boolean occupied){
+		if (occupied){
+			this.squareColor = Color.blue;
+			this.repaint();
+		}
+		this.occupied = occupied;
+	}
+	
+	/**
+	 * <p>This is a getter for the occupied ship</p>
+	 * @return Returns whether or not the square is occupied
+	 */
+	public boolean getOccupied(){
+		return this.occupied;
+	}
+	
+	/**
+	 * 
+	 */
+	public void mouseClicked(MouseEvent e){
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		this.squareColor = this.squareColor.darker();
+		this.repaint();
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		this.squareColor = this.squareColor.brighter();
+		this.repaint();
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		this.squareColor = this.squareColor.darker();
+		this.repaint();
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		this.squareColor = this.squareColor.brighter();
+		this.repaint();
+	}
+	
+}

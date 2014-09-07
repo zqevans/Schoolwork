@@ -1,0 +1,10 @@
+Assignment 1 data structures:
+
+Queue<BusThread> northBusQueue: A queue to hold the busses waiting to go north.
+
+Queue<BusThread> southBusQueue: A queue to hold the busses waiting to go south.
+
+ArrayList<BusThread> busBuffer: An array to hold the busses that are allowed to go.
+Only the controller thread can place busses into busBuffer, and busses remove themselves from
+the queue after they leave the section. ArriveSection() is implemented by the thread waiting until it's put
+into busBuffer.

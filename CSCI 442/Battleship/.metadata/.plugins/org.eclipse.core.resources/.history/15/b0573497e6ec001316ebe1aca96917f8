@@ -1,0 +1,394 @@
+import javax.swing.*;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.text.StringCharacterIterator;
+import java.util.*;
+import java.io.*;
+@SuppressWarnings("serial")
+public class GameBoard extends JFrame {
+	private PrintWriter serverSock;
+	private BoardPanel playerPanel = new BoardPanel(false);
+	private BoardPanel enemyPanel = new BoardPanel(true);
+	private ArrayList<Ship> playerShips = new ArrayList<Ship>();
+	private JPanel gameBoardsPanel = new JPanel();
+	private JPanel labelsPanel = new JPanel();
+	private JPanel messagePanel = new JPanel();
+	private JLabel messageLabel = new JLabel();
+	private JButton rotateButton = new JButton("Rotate");
+	private String gameState;
+	private ArrayList<String> messageList = new ArrayList<String>();
+	
+	
+	/*
+	 * States:
+	 * waiting: Waiting for game to start
+	 * placing: Placing ships
+	 * placed: Ships have been placed, waiting for first turn
+	 * action: Your turn
+	 * attacked: You sent an attack
+	 * enemyturn: Enemy player's turn
+	 */
+	
+	//Placing stage variables
+	private Ship placingShip;
+	private boolean placeHoriz;
+	ListIterator<Ship> shipIterator;
+	
+	//Player turn variables
+	public boolean canPlace;
+	/**
+	 * <p>Constructor for a Game Board</p>
+	 * @param name The player's name
+	 * @param server The output stream to the server
+	 * @param shipNames The names of the ships
+	 */
+	public GameBoard(String name, PrintWriter server, String[] shipNames){
+		this.serverSock = server;
+		
+		//Display setup
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("Battleship");
+		setSize(1000,750);
+		setLocationRelativeTo(null);
+		
+		//Adding Panels
+		setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
+		
+		//Labels at the top of the window
+		add(labelsPanel);
+		labelsPanel.setLayout(new BoxLayout(labelsPanel, BoxLayout.X_AXIS));
+		labelsPanel.add(new JLabel(name));
+		labelsPanel.add(Box.createHorizontalStrut(400));
+		labelsPanel.add(new JLabel("Enemy"));
+		
+		//Two game boards
+		add(gameBoardsPanel);
+		gameBoardsPanel.setPreferredSize(new Dimension(800,400));
+		gameBoardsPanel.setLayout(new BoxLayout(gameBoardsPanel, BoxLayout.X_AXIS));
+		gameBoardsPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		gameBoardsPanel.add(playerPanel);
+		gameBoardsPanel.add(Box.createHorizontalStrut(20));
+		gameBoardsPanel.add(enemyPanel);
+		
+		//Message panel
+		add(Box.createVerticalGlue());
+		messagePanel.setBorder(BorderFactory.createLineBorder(Color.green));
+		messagePanel.add(messageLabel);
+		messagePanel.add(rotateButton);
+		setMessage("Waiting");
+		add(messagePanel);
+		rotateButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				placeHoriz = !placeHoriz;
+			}
+		});
+		rotateButton.setVisible(false);
+		
+		pack();
+		
+		//Game state setup
+		gameState = "waiting";
+		placeHoriz = true;
+		placingShip = null;
+		this.canPlace = false;
+		playerShips.add(new Ship(shipNames[0], 5, false));
+		playerShips.add(new Ship(shipNames[1], 4, false));
+		playerShips.add(new Ship(shipNames[2], 3, false));
+		playerShips.add(new Ship(shipNames[3], 3, false));
+		playerShips.add(new Ship(shipNames[4], 2, false));
+
+		shipIterator = playerShips.listIterator();
+		placingShip = shipIterator.next();
+	}
+	/**
+	 * <p>This adds a message to the message list on the screen</p>
+	 * @param msg The message to add
+	 */
+	public void setMessage(String msg){
+		
+		if (messageList.size() < 5){
+			messageList.add(msg);
+		}
+		else{
+			messageList.remove(0);
+			messageList.add(msg);
+		}
+		
+		String concatMsg = "<html>";
+		boolean first = true;
+		for (String s: messageList){
+			if (first){
+				first = false;
+			}
+			else{
+				concatMsg += "<br/>";
+			}
+			concatMsg += s;
+		}
+		concatMsg += "</html>";
+		
+		messageLabel.setText(concatMsg);
+		messagePanel.revalidate();
+		messagePanel.repaint();
+	}
+	
+	
+	/**
+	 * <p>This sets the game state</p>
+	 * @param s The string for the game state
+	 */
+	public void setGameState(String s){
+		if(s.equals("placing")){
+			rotateButton.setVisible(true);
+			setMessage("Place your "+placingShip.getName());
+		}
+		if (!s.equals("placing") && gameState.equals("placing")){
+			rotateButton.setVisible(false);
+		}
+		this.gameState = s;
+	}
+	
+	
+	/**
+	 * <p>Getter for the game state</p>
+	 * @return The string showing the game state
+	 */
+	public String getGameState(){
+		return this.gameState;
+	}
+	
+	/**
+	 * <p>This logs the result of an enemy attacking you</p>
+	 * @param pointString This is the point the enemy attacked
+	 */
+	public void enemyAttack(String pointString){
+		int pointRow = BSUtil.charToInt(pointString.charAt(0)) - 1;
+		int pointCol = Integer.parseInt(pointString.substring(1)) - 1;
+		BoardSquare attackSquare = playerPanel.getButtonGrid()[pointRow][pointCol];
+		attackSquare.hit();
+	}
+	
+	/**
+	 * <p>This logs the result of attacking an enemy</p>
+	 * @param pointString The string you attacked
+	 * @param shipHit Whether or not you hit a ship
+	 */
+	public void attackResult(String pointString, boolean shipHit){
+		int pointRow = BSUtil.charToInt(pointString.charAt(0)) - 1;
+		int pointCol = Integer.parseInt(pointString.substring(1)) - 1;
+		BoardSquare attackSquare = enemyPanel.getButtonGrid()[pointRow][pointCol];
+		if (shipHit){
+			attackSquare.setOccupied(true);
+		}
+		attackSquare.hit();
+	}
+	
+	/**
+	 * <p>This function sends your ship positions to the server</p>
+	 */
+	private void sendShips(){
+		String placeString = "Ships: ";
+		boolean first = true;
+		for (Ship playerShip: playerShips){
+			ArrayList<BoardSquare> shipPoints = playerShip.getPoints();
+			if (first){
+				first = false;
+			}
+			else{
+				placeString += "; ";
+			}
+			placeString += playerShip.getName()+", ";
+			
+			for (BoardSquare shipSquare: shipPoints){
+				placeString += shipSquare.getLoc().getLetter()+String.valueOf(shipSquare.getLoc().getNumber())+" ";
+			}
+			
+			
+		}
+		
+		System.out.println(placeString);
+		
+		serverSock.println(placeString);
+		gameState = "placed";
+		setMessage("Ships have all been placed");
+		rotateButton.setVisible(false);
+		
+	}
+	
+	
+	/**
+	 * <p>This is a panel that holds a game board</p>
+	 *
+	 */
+	class BoardPanel extends JPanel{
+		private BoardSquare[][] buttonGrid;
+		char[] letters = "ABCDEFGHIJ".toCharArray();
+		private StringCharacterIterator letterIterator = new StringCharacterIterator("ABCDEFGHIJ");
+		
+		/**
+		 * <p>Constructor for the panel</p>
+		 * @param enemy A boolean for whether or not it's an enemy panel
+		 */
+		public BoardPanel(boolean enemy){
+			setSize(420, 420);
+			setBorder(BorderFactory.createLineBorder(Color.black));
+			buttonGrid = new BoardSquare[10][10];
+			
+		
+			for (int row = 0; row < 10; row++){
+				for(int col = 0; col < 10; col++){
+					if(!enemy){
+					buttonGrid[row][col] = new PlayerSquare(letters[row], col+1, buttonGrid);
+					}
+					else{
+						buttonGrid[row][col] = new EnemySquare(letters[row], col+1, buttonGrid);
+					}
+				}
+			}
+			setLayout(new GridLayout(11,11));
+			for (int i = 0; i<= 10; i++){
+				if (i == 0){
+					add(new StrSquare(""));
+				}
+				else{
+					add(new StrSquare(String.valueOf(i)));
+				}
+				
+			}
+			for(BoardSquare[] btnList: buttonGrid){
+				String addString = "";
+				addString += letterIterator.current();
+				letterIterator.next();
+				add(new StrSquare(addString));
+				for (BoardSquare btn : btnList){
+					add(btn);
+				}
+			}
+		}
+		public BoardSquare[][] getButtonGrid(){
+			return this.buttonGrid;
+		}
+	}
+	
+	class StrSquare extends JPanel{
+		private String squareString;
+		public StrSquare(String inString){
+			this.squareString = inString;
+		}
+		public void paintComponent(Graphics g){
+			super.paintComponent(g);
+			g.drawString(this.squareString, 15, 20);
+		}
+	}
+	
+	class EnemySquare extends BoardSquare {
+		private boolean attacked; //True if square has been attacked
+		
+		public EnemySquare(char letter, int num, BoardSquare[][] parentGrid) {
+			super(letter, num, parentGrid);
+			this.attacked = false;
+		}
+		
+		public void hit(){
+			if (this.occupied){
+				this.squareColor = Color.RED;
+			}
+			else{
+				this.squareColor = Color.CYAN;
+			}
+			this.repaint();
+		}
+		
+		@Override
+		public void mouseClicked(MouseEvent e){
+			if (gameState.equals("action")){
+				if (!this.attacked){
+					this.squareColor = Color.ORANGE;
+					this.attacked = true;
+					setGameState("attacked");
+					serverSock.println("Attack: "+this.loc.getLetter()+this.loc.getNumber());
+				}
+			}
+		}
+	}
+	class PlayerSquare extends BoardSquare{
+		
+		public PlayerSquare(char letter, int num, BoardSquare[][] parentGrid){
+			super(letter, num, parentGrid);
+		}
+		
+		@Override
+		public void mouseClicked(MouseEvent e){
+			if (gameState.equals("placing")){ //Placing ships
+				
+				try{
+					if (!placingShip.setLocation(this.parentGrid, BSUtil.charToInt(this.loc.getLetter())-1, this.loc.getNumber()-1, placeHoriz)){
+						return;
+					}
+					placingShip = shipIterator.next();
+					setMessage("Please place your "+placingShip.getName());
+				}
+				catch(NoSuchElementException nse){
+					sendShips();
+				}
+			}
+		}
+		
+		
+		public void hit(){
+			if (this.occupied){
+				this.squareColor = Color.red;
+			}
+			else{
+				this.squareColor = Color.yellow;
+			}
+			this.repaint();
+		}
+		
+		public void mouseEntered(MouseEvent e){
+			if(gameState.equals("placing")){
+				int shipLen = placingShip.getLength();
+				int shipCol = this.loc.getNumber()-1;
+				int shipRow = BSUtil.charToInt(this.loc.getLetter())-1;
+				int limit = placeHoriz?shipCol:shipRow;
+				for (int i = 0; i < Math.min(shipLen, 10-limit); i++){
+					BoardSquare iterSquare = this.parentGrid[shipRow][shipCol];
+					
+					iterSquare.squareColor = iterSquare.squareColor.darker();
+						
+					
+					if(placeHoriz){
+						shipCol++;
+					}
+					else{
+						shipRow++;
+					}
+					iterSquare.repaint();
+				}
+			}
+		}
+		
+		public void mouseExited(MouseEvent e){
+			if(gameState.equals("placing")){
+				int shipLen = placingShip.getLength();
+				int shipCol = this.loc.getNumber()-1;
+				int shipRow = BSUtil.charToInt(this.loc.getLetter())-1;
+				int limit = placeHoriz?shipCol:shipRow;
+				for (int i = 0; i < Math.min(shipLen, 10-limit); i++){
+					BoardSquare iterSquare = this.parentGrid[shipRow][shipCol];
+					
+					iterSquare.squareColor = iterSquare.squareColor.brighter();
+					
+					if(placeHoriz){
+						shipCol++;
+					}
+					else{
+						shipRow++;
+					}
+					iterSquare.repaint();
+				}
+			}
+		}
+	}
+}
